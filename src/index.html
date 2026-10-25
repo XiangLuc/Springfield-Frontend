@@ -1,23 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
-    <title>SpringfieldFrontendApp</title>
+    <title>Springfield</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-      rel="stylesheet"
+    <meta
+      name="description"
+      content="Springfield : supervision des équipements du réseau de transport et suivi des incidents."
     />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div class="demarrage" role="status">
+        <span class="demarrage-indicateur"></span>
+        <p>Chargement de l'application…</p>
+      </div>
+    </app-root>
   </body>
 </html>
