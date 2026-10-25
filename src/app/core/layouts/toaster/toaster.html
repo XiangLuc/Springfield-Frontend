@@ -1,0 +1,16 @@
+<div class="toaster" role="status">
+  @for (notification of notifications(); track notification.id) {
+    <div class="toast" [class]="notification.type">
+      <mat-icon class="icone" [svgIcon]="icones[notification.type]" />
+      <p class="message">{{ notification.message }}</p>
+      <button
+        class="fermer"
+        type="button"
+        aria-label="Fermer la notification"
+        (click)="fermer(notification.id)"
+      >
+        <mat-icon svgIcon="close" />
+      </button>
+    </div>
+  }
+</div>

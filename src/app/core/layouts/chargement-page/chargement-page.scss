@@ -1,0 +1,35 @@
+.barre {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1200;
+  height: 3px;
+  overflow: hidden;
+  background-color: var(--mat-sys-primary-container);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background-color: var(--mat-sys-primary);
+    animation: progression 1200ms ease-in-out infinite;
+  }
+}
+
+@keyframes progression {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barre::before {
+    animation-duration: 3000ms;
+  }
+}
