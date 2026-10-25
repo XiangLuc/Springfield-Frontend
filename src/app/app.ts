@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ChargementPage } from './core/layouts/chargement-page/chargement-page';
+import { Toaster } from './core/layouts/toaster/toaster';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ChargementPage, Toaster],
   selector: 'app-root',
-  styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('Springfield-Frontend-App');
-}
+export class App {}
