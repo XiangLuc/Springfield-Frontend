@@ -1,1 +1,73 @@
-<p>connexion works!</p>
+<main class="page">
+  <section class="panneau-formulaire">
+    <p class="marque">
+      <img src="images/logo.svg" alt="" width="36" height="36" />
+      Springfield
+    </p>
+
+    <div class="contenu">
+      <h1>Connexion</h1>
+      <p class="sous-titre">Accédez à la supervision des équipements et au suivi des incidents.</p>
+
+      <form class="formulaire" [formGroup]="formulaire" (ngSubmit)="connecter()">
+        <label class="libelle" for="login">Identifiant</label>
+        <mat-form-field>
+          <mat-icon matPrefix svgIcon="person" />
+          <input
+            matInput
+            id="login"
+            formControlName="login"
+            placeholder="Votre identifiant"
+            autocomplete="username"
+            required
+          />
+          <mat-error>L'identifiant est obligatoire.</mat-error>
+        </mat-form-field>
+
+        <label class="libelle" for="mot-de-passe">Mot de passe</label>
+        <mat-form-field>
+          <mat-icon matPrefix svgIcon="lock" />
+          <input
+            matInput
+            id="mot-de-passe"
+            [type]="motDePasseVisible() ? 'text' : 'password'"
+            formControlName="motDePasse"
+            placeholder="Votre mot de passe"
+            autocomplete="current-password"
+            required
+          />
+          <button
+            matIconButton
+            matSuffix
+            type="button"
+            [attr.aria-label]="
+              motDePasseVisible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+            "
+            [attr.aria-pressed]="motDePasseVisible()"
+            (click)="basculerVisibiliteMotDePasse()"
+          >
+            <mat-icon [svgIcon]="motDePasseVisible() ? 'visibility_off' : 'visibility'" />
+          </button>
+          <mat-error>Le mot de passe est obligatoire.</mat-error>
+        </mat-form-field>
+
+        @if (erreur()) {
+          <p class="message-erreur" role="alert">
+            <mat-icon svgIcon="error" />
+            {{ erreur() }}
+          </p>
+        }
+
+        <button class="bouton-connexion" matButton="filled" type="submit" [disabled]="chargement()">
+          {{ chargement() ? 'Connexion…' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="aide">Pas encore de compte ? Demandez-le à votre responsable d'exploitation.</p>
+    </div>
+
+    <p class="pied">© 2026 Springfield</p>
+  </section>
+
+  <app-vitrine-connexion class="vitrine" />
+</main>
