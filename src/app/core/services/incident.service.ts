@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Affectation,
+  CreationEvaluation,
   CriteresRecherche,
   DeclarationIncident,
   Evaluation,
@@ -40,6 +41,13 @@ export class IncidentService {
 
   trouverEvaluation(id: number): Observable<Evaluation> {
     return this.httpClient.get<Evaluation>(`${this.API}/${this.endpoint}/${id}/evaluation`);
+  }
+
+  evaluer(id: number, evaluation: CreationEvaluation): Observable<Evaluation> {
+    return this.httpClient.post<Evaluation>(
+      `${this.API}/${this.endpoint}/${id}/evaluation`,
+      evaluation,
+    );
   }
 
   declarer(declaration: DeclarationIncident): Observable<IncidentResume> {

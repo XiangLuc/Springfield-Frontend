@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Prestataire } from '../../../api/models/ApiEquipement';
+import { PrestataireNote } from '../../../api/models/ApiEquipement';
 import { environment } from '../../../environment/environment';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class PrestataireService {
 
   constructor(private httpClient: HttpClient) {}
 
-  listerPrestataires(): Observable<Prestataire[]> {
-    return this.httpClient.get<Prestataire[]>(`${this.API}/${this.endpoint}`);
+  listerPrestataires(): Observable<PrestataireNote[]> {
+    return this.httpClient.get<PrestataireNote[]>(`${this.API}/${this.endpoint}`);
   }
 }
