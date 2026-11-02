@@ -1,4 +1,144 @@
-<div class="entete-page">
-  <h1>Tableau de bord</h1>
-  <p>Incidents actifs, leur niveau d'attention et les indicateurs clés du réseau.</p>
+<div class="entete">
+  <div class="entete-page">
+    <h1>Tableau de bord</h1>
+    <p>Incidents actifs, leur niveau d'attention et les indicateurs clés du réseau.</p>
+  </div>
+  <button matButton="outlined" type="button" [disabled]="chargement()" (click)="charger()">
+    Actualiser
+  </button>
 </div>
+
+@if (erreur()) {
+  <div class="message-erreur erreur-chargement" role="alert">
+    <span>{{ erreur() }}</span>
+    <button matButton type="button" (click)="charger()">Réessayer</button>
+  </div>
+}
+
+@if (tableauDeBord(); as donnees) {
+  <section class="indicateurs" aria-label="Indicateurs du réseau">
+    <mat-card class="indicateur" appearance="outlined">
+      <span class="indicateur-libelle">Incidents actifs</span>
+      <span class="indicateur-valeur">{{ donnees.nombreIncidentsActifs }}</span>
+    </mat-card>
+    <mat-card class="indicateur" appearance="outlined">
+      <span class="indicateur-libelle">Stations touchées</span>
+      <span class="indicateur-valeur">{{ donnees.nombreStationsTouchees }}</span>
+    </mat-card>
+    <mat-card class="indicateur" appearance="outlined">
+      <span class="indicateur-libelle">Durée moyenne d'ouverture</span>
+      <span class="indicateur-valeur">{{ donnees.dureeMoyenneOuvertureEnHeures }} h</span>
+    </mat-card>
+  </section>
+
+  <section class="filtres" aria-label="Filtres des incidents">
+    <mat-form-field class="filtre-station" subscriptSizing="dynamic">
+      <mat-label>Station</mat-label>
+      <mat-select [value]="stationId()" (selectionChange)="filtrerParStation($event.value)">
+        <mat-option [value]="null">Toutes les stations</mat-option>
+        @for (station of stations(); track station.id) {
+          <mat-option [value]="station.id">{{ station.nom }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="filtre-niveaux" role="group" aria-label="Filtrer par niveau d'attention">
+      @for (niveau of niveaux; track niveau.valeur) {
+        <button
+          type="button"
+          class="filtre-niveau"
+          [class]="'niveau-' + niveau.valeur.toLowerCase()"
+          [class.actif]="niveauAttention() === niveau.valeur"
+          [attr.aria-pressed]="niveauAttention() === niveau.valeur"
+          (click)="basculerNiveau(niveau.valeur)"
+        >
+          <mat-icon class="niveau-icone" [svgIcon]="niveau.icone" />
+          <span>{{ niveau.libelle }}</span>
+          <strong>{{ donnees.nombreParNiveau[niveau.valeur] }}</strong>
+        </button>
+      }
+    </div>
+  </section>
+
+  <mat-card class="liste" appearance="outlined" [attr.aria-busy]="chargement()">
+    <div class="progression">
+      @if (chargement()) {
+        <mat-progress-bar mode="indeterminate" aria-label="Chargement des incidents" />
+      }
+    </div>
+
+    @if (donnees.incidents.length > 0) {
+      <table class="incidents">
+        <caption class="masque">
+          Incidents actifs, du plus urgent au moins urgent
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Niveau</th>
+            <th scope="col">Incident</th>
+            <th scope="col">Équipement</th>
+            <th scope="col">Station</th>
+            <th scope="col">Ouvert depuis</th>
+            <th scope="col">Prestataire</th>
+            <th scope="col"><span class="masque">Détail</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (incident of donnees.incidents; track incident.id) {
+            <tr
+              class="ligne"
+              [class]="'niveau-' + incident.niveauAttention.toLowerCase()"
+              [routerLink]="['/incidents', incident.id]"
+            >
+              <td class="cellule-niveau">
+                <span class="niveau">
+                  <mat-icon
+                    class="niveau-icone"
+                    [svgIcon]="presentationDe(incident.niveauAttention).icone"
+                  />
+                  {{ incident.libelleNiveauAttention }}
+                </span>
+              </td>
+              <td class="cellule-incident">
+                <a class="lien" [routerLink]="['/incidents', incident.id]">{{
+                  incident.description
+                }}</a>
+              </td>
+              <td data-libelle="Équipement">
+                {{ incident.libelleEquipement }}
+                <small>{{ incident.referenceEquipement }} · {{ incident.typeEquipement }}</small>
+              </td>
+              <td data-libelle="Station">{{ incident.station }}</td>
+              <td data-libelle="Ouvert depuis">
+                {{ incident.dureeOuvertureEnHeures }} h
+                <small>le {{ incident.dateOuverture | date: 'dd/MM/yyyy à HH:mm' }}</small>
+              </td>
+              <td data-libelle="Prestataire">
+                @if (incident.prestataire) {
+                  {{ incident.prestataire }}
+                } @else {
+                  <span class="sans-prestataire">En attente d'affectation</span>
+                }
+              </td>
+              <td class="cellule-action"><mat-icon svgIcon="chevron_right" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else if (stationId() !== null || niveauAttention() !== null) {
+      <div class="liste-vide">
+        <p>Aucun incident actif ne correspond à ces filtres.</p>
+        <button matButton type="button" (click)="reinitialiserFiltres()">
+          Réinitialiser les filtres
+        </button>
+      </div>
+    } @else {
+      <div class="liste-vide">
+        <mat-icon svgIcon="check_circle" />
+        <p>Aucun incident actif sur le réseau.</p>
+      </div>
+    }
+  </mat-card>
+} @else if (chargement()) {
+  <mat-progress-bar mode="indeterminate" aria-label="Chargement du tableau de bord" />
+}
