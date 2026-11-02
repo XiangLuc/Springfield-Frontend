@@ -1,0 +1,32 @@
+.carte {
+  overflow: hidden;
+}
+
+.defilement {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 620px;
+}
+
+.nom {
+  font-weight: 500;
+}
+
+.lien {
+  display: block;
+  color: inherit;
+}
+
+.secondaire {
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.etat-vide {
+  margin: 0;
+  padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
+}
