@@ -1,0 +1,33 @@
+<div class="entete-page entete-liste">
+  <div>
+    <h1>Incidents</h1>
+    <p>Déclarez un incident, suivez sa prise en charge et enregistrez sa résolution.</p>
+  </div>
+  <a matButton="filled" routerLink="/incidents/nouveau">
+    <mat-icon svgIcon="add" />
+    Déclarer un incident
+  </a>
+</div>
+
+@if (erreur()) {
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+}
+
+<mat-card class="carte" appearance="outlined">
+  <div class="entete-carte">
+    <h2>Incidents en cours</h2>
+    @if (!chargement()) {
+      <span class="compteur">
+        {{ incidents().length }} incident{{ incidents().length > 1 ? 's' : '' }}
+      </span>
+    }
+  </div>
+
+  @if (chargement()) {
+    <p class="etat-vide">Chargement des incidents…</p>
+  } @else if (incidents().length === 0) {
+    <p class="etat-vide">Aucun incident en cours sur le réseau.</p>
+  } @else {
+    <app-incident-tableau [incidents]="incidents()" [colonnes]="colonnes" />
+  }
+</mat-card>

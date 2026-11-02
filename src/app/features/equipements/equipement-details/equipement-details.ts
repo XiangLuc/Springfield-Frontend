@@ -24,11 +24,11 @@ import { LIBELLES_ETAT_EQUIPEMENT } from '../../../shared/libelles/libelles';
     MatTableModule,
     Badge,
   ],
-  selector: 'app-fiche-equipement',
-  styleUrl: './fiche-equipement.scss',
-  templateUrl: './fiche-equipement.html',
+  selector: 'app-equipement-details',
+  styleUrl: './equipement-details.scss',
+  templateUrl: './equipement-details.html',
 })
-export class FicheEquipement {
+export class EquipementDetails {
   libellesEtat = LIBELLES_ETAT_EQUIPEMENT;
   colonnesEnCours = ['dateOuverture', 'description', 'statut', 'prestataire'];
   colonnesPasses = ['dateOuverture', 'description', 'prestataire', 'dateResolution'];

@@ -22,7 +22,17 @@
       <h1>{{ equipement.libelle }}</h1>
       <p>{{ equipement.reference }}</p>
     </div>
-    <app-badge [valeur]="equipement.etat" />
+    <div class="actions-fiche">
+      <app-badge [valeur]="equipement.etat" />
+      <a
+        matButton="filled"
+        routerLink="/incidents/nouveau"
+        [queryParams]="{ equipement: equipement.id }"
+      >
+        <mat-icon svgIcon="add" />
+        Déclarer un incident
+      </a>
+    </div>
   </div>
 
   <mat-card class="carte" appearance="outlined">
@@ -82,7 +92,12 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="colonnesEnCours"></tr>
-            <tr mat-row *matRowDef="let incident; columns: colonnesEnCours"></tr>
+            <tr
+              mat-row
+              *matRowDef="let incident; columns: colonnesEnCours"
+              class="ligne"
+              [routerLink]="['/incidents', incident.id]"
+            ></tr>
           </table>
         </div>
       }
@@ -125,7 +140,12 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="colonnesPasses"></tr>
-            <tr mat-row *matRowDef="let incident; columns: colonnesPasses"></tr>
+            <tr
+              mat-row
+              *matRowDef="let incident; columns: colonnesPasses"
+              class="ligne"
+              [routerLink]="['/incidents', incident.id]"
+            ></tr>
           </table>
         </div>
       }

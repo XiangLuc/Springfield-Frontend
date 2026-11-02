@@ -10,8 +10,15 @@ import { environment } from '../../../environment/environment';
 export class EquipementService {
   private readonly API = environment.apiUrl;
   private readonly endpoint = 'equipements';
+  private readonly endpointStations = 'stations';
 
   constructor(private httpClient: HttpClient) {}
+
+  listerEquipementsDeLaStation(idStation: number): Observable<Equipement[]> {
+    return this.httpClient.get<Equipement[]>(
+      `${this.API}/${this.endpointStations}/${idStation}/${this.endpoint}`,
+    );
+  }
 
   trouverEquipement(id: number): Observable<Equipement> {
     return this.httpClient.get<Equipement>(`${this.API}/${this.endpoint}/${id}`);

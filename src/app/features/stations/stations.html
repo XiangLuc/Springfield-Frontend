@@ -35,52 +35,7 @@
     } @else if (equipements().length === 0) {
       <p class="etat-vide">Aucun équipement dans cette station.</p>
     } @else {
-      <div class="defilement">
-        <table mat-table [dataSource]="equipements()">
-          <ng-container matColumnDef="reference">
-            <th mat-header-cell *matHeaderCellDef>Référence</th>
-            <td mat-cell *matCellDef="let equipement" class="reference">
-              {{ equipement.reference }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="libelle">
-            <th mat-header-cell *matHeaderCellDef>Équipement</th>
-            <td mat-cell *matCellDef="let equipement">
-              <a class="lien" [routerLink]="['/equipements', equipement.id]">
-                {{ equipement.libelle }}
-              </a>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
-            <td mat-cell *matCellDef="let equipement">{{ equipement.type.nom }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="etat">
-            <th mat-header-cell *matHeaderCellDef>État</th>
-            <td mat-cell *matCellDef="let equipement">
-              <app-badge [valeur]="equipement.etat" />
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef class="action">
-              <mat-icon svgIcon="chevron_right" />
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="colonnes"></tr>
-          <tr
-            mat-row
-            *matRowDef="let equipement; columns: colonnes"
-            class="ligne"
-            [routerLink]="['/equipements', equipement.id]"
-          ></tr>
-        </table>
-      </div>
+      <app-equipement-liste [equipements]="equipements()" />
     }
   </mat-card>
 } @else if (!erreur()) {

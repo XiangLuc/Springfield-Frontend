@@ -60,8 +60,23 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.actions-fiche {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .defilement {
   overflow-x: auto;
+}
+
+.ligne {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
 }
 
 table {

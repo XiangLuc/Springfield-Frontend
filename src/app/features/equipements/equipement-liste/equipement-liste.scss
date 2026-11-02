@@ -1,0 +1,36 @@
+.defilement {
+  overflow-x: auto;
+}
+
+table {
+  min-width: 560px;
+}
+
+.reference {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.lien {
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.ligne {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  &:hover .lien {
+    text-decoration: underline;
+  }
+}
+
+.action {
+  width: 40px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: right;
+}

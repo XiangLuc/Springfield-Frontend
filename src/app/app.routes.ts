@@ -39,14 +39,31 @@ export const routes: Routes = [
         path: 'equipements/:id',
         title: 'Fiche équipement',
         loadComponent: () =>
-          import('./features/equipements/fiche-equipement/fiche-equipement').then(
-            (m) => m.FicheEquipement,
+          import('./features/equipements/equipement-details/equipement-details').then(
+            (m) => m.EquipementDetails,
           ),
       },
       {
         path: 'incidents',
         title: 'Incidents',
-        loadComponent: () => import('./features/incidents/incidents').then((m) => m.Incidents),
+        loadComponent: () =>
+          import('./features/incidents/incident-liste/incident-liste').then((m) => m.IncidentListe),
+      },
+      {
+        path: 'incidents/nouveau',
+        title: 'Déclarer un incident',
+        loadComponent: () =>
+          import('./features/incidents/incident-declaration/incident-declaration').then(
+            (m) => m.IncidentDeclaration,
+          ),
+      },
+      {
+        path: 'incidents/:id',
+        title: 'Détail incident',
+        loadComponent: () =>
+          import('./features/incidents/incident-details/incident-details').then(
+            (m) => m.IncidentDetails,
+          ),
       },
       {
         path: 'historique',

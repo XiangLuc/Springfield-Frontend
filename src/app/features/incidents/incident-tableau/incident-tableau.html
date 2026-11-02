@@ -1,0 +1,68 @@
+<div class="defilement">
+  <table mat-table [dataSource]="incidents()">
+    <ng-container matColumnDef="dateOuverture">
+      <th mat-header-cell *matHeaderCellDef>Ouvert le</th>
+      <td mat-cell *matCellDef="let incident" class="date">
+        {{ incident.dateOuverture | date: 'dd/MM/yyyy HH:mm' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dateResolution">
+      <th mat-header-cell *matHeaderCellDef>Résolu le</th>
+      <td mat-cell *matCellDef="let incident" class="date">
+        {{ incident.dateResolution | date: 'dd/MM/yyyy HH:mm' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="equipement">
+      <th mat-header-cell *matHeaderCellDef>Équipement</th>
+      <td mat-cell *matCellDef="let incident">
+        <a class="lien" [routerLink]="['/incidents', incident.id]">
+          {{ incident.equipement.libelle }}
+        </a>
+        <span class="secondaire">{{ incident.equipement.station.nom }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let incident" class="description" [title]="incident.description">
+        {{ incident.description }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="duree">
+      <th mat-header-cell *matHeaderCellDef>Durée</th>
+      <td mat-cell *matCellDef="let incident" class="date">
+        {{ incident.dureeOuvertureEnMinutes | duree }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let incident">
+        <app-badge [valeur]="incident.statut" />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="prestataire">
+      <th mat-header-cell *matHeaderCellDef>Prestataire</th>
+      <td mat-cell *matCellDef="let incident">{{ incident.prestataire?.nom ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef class="action">
+        <mat-icon svgIcon="chevron_right" />
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colonnes()"></tr>
+    <tr
+      mat-row
+      *matRowDef="let incident; columns: colonnes()"
+      class="ligne"
+      [routerLink]="['/incidents', incident.id]"
+    ></tr>
+  </table>
+</div>
