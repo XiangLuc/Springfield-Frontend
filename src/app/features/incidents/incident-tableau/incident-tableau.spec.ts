@@ -6,20 +6,17 @@ import { IncidentTableau } from './incident-tableau';
 const INCIDENT: IncidentResume = {
   id: 7,
   description: 'Porte bloquée',
-  dateOuverture: '2026-11-01T08:00:00',
   statut: 'AFFECTE',
-  prestataire: { id: 1, nom: 'Élévation Services', email: null, telephone: null },
+  libelleStatut: 'Affecté',
+  dateOuverture: '2026-11-01T08:00:00',
   dateResolution: null,
-  equipement: {
-    id: 1,
-    reference: 'ASC-001',
-    libelle: 'Ascenseur quai A',
-    description: null,
-    type: { id: 1, nom: 'Ascenseur' },
-    station: { id: 1, nom: 'Springfield Centre' },
-    etat: 'HORS_SERVICE',
-  },
-  dureeOuvertureEnMinutes: 47 * 60,
+  dureeOuvertureEnHeures: 47,
+  equipementId: 1,
+  referenceEquipement: 'ASC-001',
+  libelleEquipement: 'Ascenseur quai A',
+  station: 'Springfield Centre',
+  prestataireId: 1,
+  prestataire: 'Élévation Services',
 };
 
 describe('IncidentTableau', () => {

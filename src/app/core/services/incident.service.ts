@@ -1,12 +1,14 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Affectation,
+  CriteresRecherche,
   DeclarationIncident,
-  IncidentDetail,
+  Evaluation,
   IncidentResume,
   ModificationIncident,
+  Page,
 } from '../../../api/models/ApiIncident';
 import { environment } from '../../../environment/environment';
 
@@ -19,16 +21,25 @@ export class IncidentService {
 
   constructor(private httpClient: HttpClient) {}
 
-  listerIncidentsEnCours(): Observable<IncidentResume[]> {
-    return this.httpClient.get<IncidentResume[]>(`${this.API}/${this.endpoint}`);
+  rechercherIncidents(criteres: CriteresRecherche): Observable<Page<IncidentResume>> {
+    let parametres = new HttpParams()
+      .set('page', criteres.page)
+      .set('size', criteres.taille)
+      .set('sort', criteres.tri);
+    if (criteres.statut) {
+      parametres = parametres.set('statut', criteres.statut);
+    }
+    return this.httpClient.get<Page<IncidentResume>>(`${this.API}/${this.endpoint}`, {
+      params: parametres,
+    });
   }
 
-  listerIncidentsResolus(): Observable<IncidentResume[]> {
-    return this.httpClient.get<IncidentResume[]>(`${this.API}/${this.endpoint}/historique`);
+  trouverIncident(id: number): Observable<IncidentResume> {
+    return this.httpClient.get<IncidentResume>(`${this.API}/${this.endpoint}/${id}`);
   }
 
-  trouverIncident(id: number): Observable<IncidentDetail> {
-    return this.httpClient.get<IncidentDetail>(`${this.API}/${this.endpoint}/${id}`);
+  trouverEvaluation(id: number): Observable<Evaluation> {
+    return this.httpClient.get<Evaluation>(`${this.API}/${this.endpoint}/${id}/evaluation`);
   }
 
   declarer(declaration: DeclarationIncident): Observable<IncidentResume> {
@@ -47,7 +58,7 @@ export class IncidentService {
   }
 
   resoudre(id: number): Observable<IncidentResume> {
-    return this.httpClient.post<IncidentResume>(
+    return this.httpClient.patch<IncidentResume>(
       `${this.API}/${this.endpoint}/${id}/resolution`,
       null,
     );

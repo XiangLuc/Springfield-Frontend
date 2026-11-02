@@ -10,10 +10,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Observable, finalize, map, switchMap, tap } from 'rxjs';
+import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
 import { Prestataire } from '../../../../api/models/ApiEquipement';
 import {
-  IncidentDetail,
+  Evaluation,
   IncidentResume,
   LONGUEUR_MAX_DESCRIPTION,
 } from '../../../../api/models/ApiIncident';
@@ -58,7 +58,8 @@ export class IncidentDetails {
   });
   prestataireChoisi = new FormControl<number | null>(null, Validators.required);
 
-  detail = signal<IncidentDetail | null>(null);
+  incident = signal<IncidentResume | null>(null);
+  evaluation = signal<Evaluation | null>(null);
   prestataires = signal<Prestataire[]>([]);
   chargement = signal(true);
   erreur = signal<string | null>(null);
@@ -66,7 +67,6 @@ export class IncidentDetails {
   confirmationResolution = signal(false);
   actionEnCours = signal(false);
 
-  incident;
   estResolu;
   estResponsable;
 
@@ -77,7 +77,6 @@ export class IncidentDetails {
     private notificationService: NotificationService,
     private route: ActivatedRoute,
   ) {
-    this.incident = computed(() => this.detail()?.incident);
     this.estResolu = computed(() => this.incident()?.statut === 'RESOLU');
     this.estResponsable = computed(
       () => this.authService.utilisateurConnecte()?.profil === 'RESPONSABLE_EXPLOITATION',
@@ -94,9 +93,10 @@ export class IncidentDetails {
         takeUntilDestroyed(),
       )
       .subscribe({
-        next: (detail) => {
-          this.detail.set(detail);
+        next: (incident) => {
+          this.incident.set(incident);
           this.chargement.set(false);
+          this.chargerEvaluationSiResolu();
           this.chargerPrestatairesSiNecessaire();
         },
         error: (erreur: HttpErrorResponse) => {
@@ -167,7 +167,7 @@ export class IncidentDetails {
     this.actionEnCours.set(true);
     action.pipe(finalize(() => this.actionEnCours.set(false))).subscribe({
       next: (incident) => {
-        this.mettreAJour(incident);
+        this.incident.set(incident);
         apresSucces();
         this.notificationService.succes(messageSucces);
       },
@@ -175,11 +175,18 @@ export class IncidentDetails {
     });
   }
 
-  private mettreAJour(incident: IncidentResume): void {
-    this.detail.update((detail) => ({ incident, evaluation: detail?.evaluation ?? null }));
+  // Un incident résolu n'a pas forcément été évalué : l'absence d'évaluation n'est pas une erreur
+  private chargerEvaluationSiResolu(): void {
+    if (!this.estResolu()) {
+      return;
+    }
+    this.incidentService
+      .trouverEvaluation(this.incident()!.id)
+      .pipe(catchError(() => of(null)))
+      .subscribe((evaluation) => this.evaluation.set(evaluation));
   }
 
-  // Seul le responsable peut affecter : inutile d'appeler une API qui refuserait l'agent
+  // Seul le responsable peut affecter : inutile de charger la liste pour l'agent
   private chargerPrestatairesSiNecessaire(): void {
     if (!this.estResponsable() || this.estResolu() || this.prestataires().length > 0) {
       return;

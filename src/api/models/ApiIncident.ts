@@ -1,27 +1,45 @@
-import { Equipement, Prestataire, StatutIncident } from './ApiEquipement';
+import { StatutIncident } from './ApiEquipement';
 
 export const LONGUEUR_MAX_DESCRIPTION = 500;
 
 export interface IncidentResume {
   id: number;
   description: string;
-  dateOuverture: string;
   statut: StatutIncident;
-  prestataire: Prestataire | null;
+  libelleStatut: string;
+  dateOuverture: string;
   dateResolution: string | null;
-  equipement: Equipement;
-  dureeOuvertureEnMinutes: number;
+  dureeOuvertureEnHeures: number;
+  equipementId: number;
+  referenceEquipement: string;
+  libelleEquipement: string;
+  station: string;
+  prestataireId: number | null;
+  prestataire: string | null;
+}
+
+export interface Page<T> {
+  contenu: T[];
+  page: number;
+  taille: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface CriteresRecherche {
+  statut: StatutIncident | null;
+  page: number;
+  taille: number;
+  tri: string;
 }
 
 export interface Evaluation {
+  id: number;
+  incidentId: number;
+  prestataire: string;
   note: number;
   commentaire: string | null;
   dateEvaluation: string;
-}
-
-export interface IncidentDetail {
-  incident: IncidentResume;
-  evaluation: Evaluation | null;
 }
 
 export interface DeclarationIncident {
