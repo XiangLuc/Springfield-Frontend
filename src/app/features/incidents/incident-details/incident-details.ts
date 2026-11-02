@@ -4,6 +4,7 @@ import { Component, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +16,10 @@ import { Prestataire } from '../../../../api/models/ApiEquipement';
 import {
   Evaluation,
   IncidentResume,
+  LONGUEUR_MAX_COMMENTAIRE,
   LONGUEUR_MAX_DESCRIPTION,
+  NOTE_MAXIMALE,
+  NOTE_MINIMALE,
 } from '../../../../api/models/ApiIncident';
 import { AuthService } from '../../../core/services/auth.service';
 import { IncidentService } from '../../../core/services/incident.service';
@@ -33,6 +37,7 @@ const CONTIENT_UN_CARACTERE_VISIBLE = /\S/;
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatFormFieldModule,
     MatIconModule,
@@ -47,6 +52,12 @@ const CONTIENT_UN_CARACTERE_VISIBLE = /\S/;
 })
 export class IncidentDetails {
   longueurMaxDescription = LONGUEUR_MAX_DESCRIPTION;
+  longueurMaxCommentaire = LONGUEUR_MAX_COMMENTAIRE;
+  noteMaximale = NOTE_MAXIMALE;
+  notes = Array.from(
+    { length: NOTE_MAXIMALE - NOTE_MINIMALE + 1 },
+    (_, position) => NOTE_MINIMALE + position,
+  );
 
   description = new FormControl('', {
     nonNullable: true,
@@ -57,6 +68,11 @@ export class IncidentDetails {
     ],
   });
   prestataireChoisi = new FormControl<number | null>(null, Validators.required);
+  note = new FormControl<number | null>(null, Validators.required);
+  commentaire = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(LONGUEUR_MAX_COMMENTAIRE)],
+  });
 
   incident = signal<IncidentResume | null>(null);
   evaluation = signal<Evaluation | null>(null);
@@ -157,6 +173,26 @@ export class IncidentDetails {
       "L'incident est résolu.",
       () => this.confirmationResolution.set(false),
     );
+  }
+
+  evaluer(): void {
+    if (this.note.invalid || this.commentaire.invalid) {
+      this.note.markAsTouched();
+      this.commentaire.markAsTouched();
+      return;
+    }
+    this.actionEnCours.set(true);
+    this.incidentService
+      .evaluer(this.incident()!.id, { note: this.note.value!, commentaire: this.commentaire.value })
+      .pipe(finalize(() => this.actionEnCours.set(false)))
+      .subscribe({
+        next: (evaluation) => {
+          this.evaluation.set(evaluation);
+          this.notificationService.succes("L'évaluation a été enregistrée.");
+        },
+        error: (erreur: HttpErrorResponse) =>
+          this.notificationService.erreur(messageErreur(erreur)),
+      });
   }
 
   private executer(

@@ -124,6 +124,28 @@
   font: var(--mat-sys-headline-small);
 }
 
+.date-evaluation {
+  margin: 8px 0 0;
+}
+
+.formulaire-evaluation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.libelle-note {
+  margin: 0 0 8px;
+  font: var(--mat-sys-label-large);
+}
+
+.erreur-note {
+  margin: 8px 0 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-error);
+}
+
 .etat-vide {
   margin: 0;
   padding: 24px;
