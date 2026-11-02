@@ -9,8 +9,10 @@ import { provideRouter } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { paginateurFrancais } from './shared/pagination/paginateur-francais';
 import { AuthService } from './core/services/auth.service';
 
 function enregistrerIcones(): void {
@@ -28,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(enregistrerIcones),
     provideAppInitializer(() => inject(AuthService).chargerUtilisateurConnecte()),
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    { provide: MatPaginatorIntl, useFactory: paginateurFrancais },
   ],
 };

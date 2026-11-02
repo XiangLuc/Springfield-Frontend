@@ -15,7 +15,7 @@
   <div class="entete-page entete-incident">
     <div>
       <h1>Incident n°{{ incident.id }}</h1>
-      <p>{{ incident.equipement.libelle }} · {{ incident.equipement.station.nom }}</p>
+      <p>{{ incident.libelleEquipement }} · {{ incident.station }}</p>
     </div>
     <app-badge [valeur]="incident.statut" />
   </div>
@@ -25,15 +25,15 @@
       <div>
         <dt>Équipement</dt>
         <dd>
-          <a class="lien" [routerLink]="['/equipements', incident.equipement.id]">
-            {{ incident.equipement.libelle }}
+          <a class="lien" [routerLink]="['/equipements', incident.equipementId]">
+            {{ incident.libelleEquipement }}
           </a>
-          <span class="secondaire">{{ incident.equipement.reference }}</span>
+          <span class="secondaire">{{ incident.referenceEquipement }}</span>
         </dd>
       </div>
       <div>
         <dt>Station</dt>
-        <dd>{{ incident.equipement.station.nom }}</dd>
+        <dd>{{ incident.station }}</dd>
       </div>
       <div>
         <dt>Ouvert le</dt>
@@ -41,22 +41,11 @@
       </div>
       <div>
         <dt>{{ estResolu() ? 'Résolu en' : 'Ouvert depuis' }}</dt>
-        <dd class="date">{{ incident.dureeOuvertureEnMinutes | duree }}</dd>
+        <dd class="date">{{ incident.dureeOuvertureEnHeures | duree }}</dd>
       </div>
       <div>
         <dt>Prestataire</dt>
-        <dd>
-          @if (incident.prestataire; as prestataire) {
-            {{ prestataire.nom }}
-            <span class="secondaire">
-              {{ prestataire.email ?? '' }}
-              {{ prestataire.email && prestataire.telephone ? '·' : '' }}
-              {{ prestataire.telephone ?? '' }}
-            </span>
-          } @else {
-            Non affecté
-          }
-        </dd>
+        <dd>{{ incident.prestataire ?? 'Non affecté' }}</dd>
       </div>
       @if (incident.dateResolution) {
         <div>
@@ -124,7 +113,7 @@
                 @for (prestataire of prestataires(); track prestataire.id) {
                   <mat-option
                     [value]="prestataire.id"
-                    [disabled]="prestataire.id === incident.prestataire?.id"
+                    [disabled]="prestataire.id === incident.prestataireId"
                   >
                     {{ prestataire.nom }}
                   </mat-option>
@@ -179,7 +168,7 @@
     <section class="section">
       <h2>Évaluation du prestataire</h2>
       <mat-card class="carte contenu" appearance="outlined">
-        @if (detail()?.evaluation; as evaluation) {
+        @if (evaluation(); as evaluation) {
           <p class="note">{{ evaluation.note }} / 5</p>
           @if (evaluation.commentaire) {
             <p class="description">{{ evaluation.commentaire }}</p>

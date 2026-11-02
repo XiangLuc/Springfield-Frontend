@@ -18,8 +18,12 @@ describe('Historique', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  it('charge les incidents résolus depuis l’historique de l’API', async () => {
-    http.expectOne('/api/incidents/historique').flush([]);
+  it('demande uniquement les incidents résolus, du plus récent au plus ancien', async () => {
+    const requete = http.expectOne((r) => r.url === '/api/incidents');
+    expect(requete.request.params.get('statut')).toBe('RESOLU');
+    expect(requete.request.params.get('sort')).toBe('dateResolution,desc');
+
+    requete.flush({ contenu: [], page: 0, taille: 20, totalElements: 0, totalPages: 0 });
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Aucun incident résolu pour le moment.');

@@ -4,31 +4,25 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { IncidentDetail } from '../../../../api/models/ApiIncident';
+import { IncidentResume } from '../../../../api/models/ApiIncident';
 import { Profil, Utilisateur } from '../../../../api/models/ApiUtilisateur';
 import { AuthService } from '../../../core/services/auth.service';
 import { IncidentDetails } from './incident-details';
 
-const DETAIL: IncidentDetail = {
-  incident: {
-    id: 7,
-    description: 'Porte bloquée',
-    dateOuverture: '2026-11-01T08:00:00',
-    statut: 'OUVERT',
-    prestataire: null,
-    dateResolution: null,
-    equipement: {
-      id: 1,
-      reference: 'ASC-001',
-      libelle: 'Ascenseur quai A',
-      description: null,
-      type: { id: 1, nom: 'Ascenseur' },
-      station: { id: 1, nom: 'Springfield Centre' },
-      etat: 'HORS_SERVICE',
-    },
-    dureeOuvertureEnMinutes: 47 * 60,
-  },
-  evaluation: null,
+const DETAIL: IncidentResume = {
+  id: 7,
+  description: 'Porte bloquée',
+  statut: 'OUVERT',
+  libelleStatut: 'Non affecté',
+  dateOuverture: '2026-11-01T08:00:00',
+  dateResolution: null,
+  dureeOuvertureEnHeures: 47,
+  equipementId: 1,
+  referenceEquipement: 'ASC-001',
+  libelleEquipement: 'Ascenseur quai A',
+  station: 'Springfield Centre',
+  prestataireId: null,
+  prestataire: null,
 };
 
 async function afficherIncidentEnTantQue(profil: Profil) {

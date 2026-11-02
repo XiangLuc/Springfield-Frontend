@@ -8,11 +8,21 @@
 }
 
 <mat-card class="carte" appearance="outlined">
-  @if (chargement()) {
+  @if (resultat(); as resultat) {
+    @if (resultat.contenu.length === 0) {
+      <p class="etat-vide">Aucun incident résolu pour le moment.</p>
+    } @else {
+      <app-incident-tableau [incidents]="resultat.contenu" [colonnes]="colonnes" />
+      <mat-paginator
+        [length]="resultat.totalElements"
+        [pageIndex]="resultat.page"
+        [pageSize]="resultat.taille"
+        [pageSizeOptions]="taillesDePage"
+        [disabled]="chargement()"
+        (page)="changerPage($event)"
+      />
+    }
+  } @else if (chargement()) {
     <p class="etat-vide">Chargement de l'historique…</p>
-  } @else if (incidents().length === 0) {
-    <p class="etat-vide">Aucun incident résolu pour le moment.</p>
-  } @else {
-    <app-incident-tableau [incidents]="incidents()" [colonnes]="colonnes" />
   }
 </mat-card>
