@@ -1,6 +1,9 @@
 import { StatutIncident } from './ApiEquipement';
 
 export const LONGUEUR_MAX_DESCRIPTION = 500;
+export const NOTE_MINIMALE = 1;
+export const NOTE_MAXIMALE = 5;
+export const LONGUEUR_MAX_COMMENTAIRE = 500;
 
 export interface IncidentResume {
   id: number;
@@ -40,6 +43,11 @@ export interface Evaluation {
   note: number;
   commentaire: string | null;
   dateEvaluation: string;
+}
+
+export interface CreationEvaluation {
+  note: number;
+  commentaire: string;
 }
 
 export interface DeclarationIncident {

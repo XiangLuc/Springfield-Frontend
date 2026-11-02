@@ -26,6 +26,11 @@ export interface Prestataire {
   telephone: string | null;
 }
 
+export interface PrestataireNote extends Prestataire {
+  noteMoyenne: number | null;
+  nombreEvaluations: number;
+}
+
 export interface Incident {
   id: number;
   description: string;
