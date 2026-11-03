@@ -1,0 +1,8 @@
+reference;libelle;type;station
+ASC-CEN-02;Ascenseur quai B;Ascenseur;Springfield Centre
+PTQ-PRT-01;Portique gare maritime;Portique de validation;Port de Springfield
+ASC-CEN-01;Reference deja existante;Ascenseur;Springfield Centre
+ROB-CEN-01;Type inconnu;Robot;Springfield Centre
+DIS-XXX-01;Station inconnue;Distributeur de titres;Station Fantome
+;Reference manquante;Ascenseur;Springfield Centre
+DIS-EVG-02;Distributeur entree;Distributeur de titres;Evergreen Terrace
