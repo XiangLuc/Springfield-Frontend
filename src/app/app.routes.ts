@@ -83,6 +83,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/auth/pages/inscription/inscription').then((m) => m.Inscription),
       },
+      {
+        path: 'import-export',
+        title: 'Import / export',
+        ...estResponsable,
+        loadComponent: () =>
+          import('./features/import-export/import-export').then((m) => m.ImportExport),
+      },
     ],
   },
   {
