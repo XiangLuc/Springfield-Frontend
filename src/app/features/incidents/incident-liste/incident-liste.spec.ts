@@ -31,7 +31,7 @@ describe('IncidentListe', () => {
   it('transmet le statut choisi et revient à la première page', () => {
     http.expectOne((r) => r.url === '/api/incidents').flush(PAGE_VIDE);
 
-    component.filtrerParStatut('AFFECTE');
+    component.filtrer({ statut: 'AFFECTE' });
 
     const requete = http.expectOne((r) => r.url === '/api/incidents');
     expect(requete.request.params.get('statut')).toBe('AFFECTE');

@@ -7,9 +7,9 @@
   </a>
   <p class="message-erreur" role="alert">{{ erreur() }}</p>
 } @else if (incident(); as incident) {
-  <a class="retour" matButton [routerLink]="estResolu() ? '/historique' : '/incidents'">
+  <a class="retour" matButton [routerLink]="depuisHistorique ? '/historique' : '/incidents'">
     <mat-icon svgIcon="arrow_back" />
-    {{ estResolu() ? 'Historique' : 'Incidents' }}
+    {{ depuisHistorique ? 'Historique' : 'Incidents' }}
   </a>
 
   <div class="entete-page entete-incident">

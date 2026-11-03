@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
 import { Prestataire } from '../../../../api/models/ApiEquipement';
 import {
@@ -83,6 +83,7 @@ export class IncidentDetails {
   confirmationResolution = signal(false);
   actionEnCours = signal(false);
 
+  depuisHistorique;
   estResolu;
   estResponsable;
 
@@ -92,7 +93,10 @@ export class IncidentDetails {
     private authService: AuthService,
     private notificationService: NotificationService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
+    this.depuisHistorique =
+      this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString() === '/historique';
     this.estResolu = computed(() => this.incident()?.statut === 'RESOLU');
     this.estResponsable = computed(
       () => this.authService.utilisateurConnecte()?.profil === 'RESPONSABLE_EXPLOITATION',

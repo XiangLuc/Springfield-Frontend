@@ -5,9 +5,20 @@
   gap: 16px;
 }
 
-.filtre-statut {
-  width: 100%;
-  max-width: 280px;
+.filtres {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.recherche {
+  grid-column: 1 / -1;
+}
+
+.effacer {
+  justify-self: start;
 }
 
 .carte {
@@ -42,6 +53,11 @@
   .entete-liste {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .filtres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .entete-carte {

@@ -23,12 +23,12 @@ export class IncidentService {
   constructor(private httpClient: HttpClient) {}
 
   rechercherIncidents(criteres: CriteresRecherche): Observable<Page<IncidentResume>> {
-    let parametres = new HttpParams()
-      .set('page', criteres.page)
-      .set('size', criteres.taille)
-      .set('sort', criteres.tri);
-    if (criteres.statut) {
-      parametres = parametres.set('statut', criteres.statut);
+    const { page, taille, tri, ...filtres } = criteres;
+    let parametres = new HttpParams().set('page', page).set('size', taille).set('sort', tri);
+    for (const [nom, valeur] of Object.entries(filtres)) {
+      if (valeur) {
+        parametres = parametres.set(nom, valeur);
+      }
     }
     return this.httpClient.get<Page<IncidentResume>>(`${this.API}/${this.endpoint}`, {
       params: parametres,

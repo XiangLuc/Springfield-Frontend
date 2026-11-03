@@ -29,8 +29,16 @@ export interface Page<T> {
   totalPages: number;
 }
 
-export interface CriteresRecherche {
+export interface FiltresIncidents {
+  motCle: string;
   statut: StatutIncident | null;
+  stationId: number | null;
+  prestataireId: number | null;
+  ouvertDepuis: string;
+  ouvertJusquAu: string;
+}
+
+export interface CriteresRecherche extends Partial<FiltresIncidents> {
   page: number;
   taille: number;
   tri: string;
