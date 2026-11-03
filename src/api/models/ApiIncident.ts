@@ -34,8 +34,8 @@ export interface FiltresIncidents {
   statut: StatutIncident | null;
   stationId: number | null;
   prestataireId: number | null;
-  ouvertDepuis: string;
-  ouvertJusquAu: string;
+  ouvertDepuis: Date | null;
+  ouvertJusquAu: Date | null;
 }
 
 export interface CriteresRecherche extends Partial<FiltresIncidents> {

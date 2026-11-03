@@ -3,6 +3,8 @@ import { Component, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerIntl, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -17,6 +19,7 @@ import { IncidentService } from '../../../core/services/incident.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PrestataireService } from '../../../core/services/prestataire.service';
 import { StationService } from '../../../core/services/station.service';
+import { calendrierFrancais } from '../../../shared/calendrier/calendrier-francais';
 import { messageErreur } from '../../../shared/erreurs/message-erreur';
 import { LIBELLES_STATUT_INCIDENT } from '../../../shared/libelles/libelles';
 import { ColonneIncident, IncidentTableau } from '../incident-tableau/incident-tableau';
@@ -29,8 +32,8 @@ const AUCUN_FILTRE: FiltresIncidents = {
   statut: null,
   stationId: null,
   prestataireId: null,
-  ouvertDepuis: '',
-  ouvertJusquAu: '',
+  ouvertDepuis: null,
+  ouvertJusquAu: null,
 };
 
 @Component({
@@ -38,12 +41,18 @@ const AUCUN_FILTRE: FiltresIncidents = {
     RouterLink,
     MatButtonModule,
     MatCardModule,
+    MatDatepickerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatPaginatorModule,
     MatSelectModule,
     IncidentTableau,
+  ],
+  providers: [
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    { provide: MatDatepickerIntl, useFactory: calendrierFrancais },
   ],
   selector: 'app-incident-liste',
   styleUrl: './incident-liste.scss',

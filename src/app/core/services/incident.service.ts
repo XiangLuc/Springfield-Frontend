@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -13,6 +14,8 @@ import {
 } from '../../../api/models/ApiIncident';
 import { environment } from '../../../environment/environment';
 
+const FORMAT_DATE_API = 'yyyy-MM-dd';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,7 +30,10 @@ export class IncidentService {
     let parametres = new HttpParams().set('page', page).set('size', taille).set('sort', tri);
     for (const [nom, valeur] of Object.entries(filtres)) {
       if (valeur) {
-        parametres = parametres.set(nom, valeur);
+        parametres = parametres.set(
+          nom,
+          valeur instanceof Date ? formatDate(valeur, FORMAT_DATE_API, 'en-US') : valeur,
+        );
       }
     }
     return this.httpClient.get<Page<IncidentResume>>(`${this.API}/${this.endpoint}`, {
