@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Equipement, Incident } from '../../../api/models/ApiEquipement';
+import { ResultatImport } from '../../../api/models/ApiImport';
 import { environment } from '../../../environment/environment';
 
 @Injectable({
@@ -30,5 +31,11 @@ export class EquipementService {
 
   listerIncidentsPasses(id: number): Observable<Incident[]> {
     return this.httpClient.get<Incident[]>(`${this.API}/${this.endpoint}/${id}/incidents/passes`);
+  }
+
+  importer(fichier: File): Observable<ResultatImport> {
+    const formulaire = new FormData();
+    formulaire.append('fichier', fichier);
+    return this.httpClient.post<ResultatImport>(`${this.API}/${this.endpoint}/import`, formulaire);
   }
 }

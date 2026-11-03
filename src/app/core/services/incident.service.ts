@@ -50,6 +50,12 @@ export class IncidentService {
     );
   }
 
+  exporterHistorique(): Observable<Blob> {
+    return this.httpClient.get(`${this.API}/${this.endpoint}/historique/export`, {
+      responseType: 'blob',
+    });
+  }
+
   declarer(declaration: DeclarationIncident): Observable<IncidentResume> {
     return this.httpClient.post<IncidentResume>(`${this.API}/${this.endpoint}`, declaration);
   }
