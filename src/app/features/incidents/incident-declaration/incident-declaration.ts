@@ -17,6 +17,7 @@ import { EquipementService } from '../../../core/services/equipement.service';
 import { IncidentService } from '../../../core/services/incident.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { StationService } from '../../../core/services/station.service';
+import { AvertissementRgpdDirective } from '../../../shared/composants/avertissement-rgpd/avertissement-rgpd.directive';
 import { messageErreur } from '../../../shared/erreurs/message-erreur';
 
 // Refuse une description composée uniquement d'espaces, comme le fait le serveur (@NotBlank)
@@ -24,6 +25,7 @@ const CONTIENT_UN_CARACTERE_VISIBLE = /\S/;
 
 @Component({
   imports: [
+    AvertissementRgpdDirective,
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
