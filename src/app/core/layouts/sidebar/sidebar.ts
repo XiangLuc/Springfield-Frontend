@@ -56,6 +56,12 @@ const SECTIONS: SectionNavigation[] = [
         chemin: '/agents/nouveau',
         profil: 'RESPONSABLE_EXPLOITATION',
       },
+      {
+        libelle: 'Import / export',
+        icone: 'swap_vert',
+        chemin: '/import-export',
+        profil: 'RESPONSABLE_EXPLOITATION',
+      },
     ],
   },
 ];
