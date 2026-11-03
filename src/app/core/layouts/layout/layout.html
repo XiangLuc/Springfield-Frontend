@@ -11,6 +11,7 @@
     <div class="panneau">
       <app-navbar [afficherBoutonMenu]="estPetitEcran()" (menuDemande)="ouvrirMenu()" />
       <main class="contenu">
+        <app-fil-ariane />
         <router-outlet />
       </main>
     </div>

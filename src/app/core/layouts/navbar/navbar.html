@@ -15,6 +15,15 @@
 
   <span class="espace"></span>
 
+  <button
+    matIconButton
+    type="button"
+    [attr.aria-label]="modeNuit() ? 'Passer en mode jour' : 'Passer en mode nuit'"
+    (click)="basculerTheme()"
+  >
+    <mat-icon [svgIcon]="modeNuit() ? 'light_mode' : 'dark_mode'" />
+  </button>
+
   @if (utilisateur(); as utilisateur) {
     <p class="salutation">
       Bonjour {{ utilisateur.prenom }}

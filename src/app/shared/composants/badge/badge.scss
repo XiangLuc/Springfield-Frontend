@@ -17,13 +17,13 @@
 }
 
 :host(.succes) {
-  background-color: #e6f4ea;
-  color: #146c2e;
+  background-color: light-dark(#e6f4ea, #0f3d1e);
+  color: light-dark(#146c2e, #a8dab5);
 }
 
 :host(.alerte) {
-  background-color: #fef3d6;
-  color: #7a4a00;
+  background-color: light-dark(#fef3d6, #4a3200);
+  color: light-dark(#7a4a00, #ffd98a);
 }
 
 :host(.erreur) {

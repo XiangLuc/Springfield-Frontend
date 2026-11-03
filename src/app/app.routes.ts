@@ -7,6 +7,10 @@ const estResponsable: Partial<Route> = {
   data: { profil: 'RESPONSABLE_EXPLOITATION' },
 };
 
+const LIEN_STATIONS = { libelle: 'Stations', chemin: '/stations' };
+const LIEN_INCIDENTS = { libelle: 'Incidents', chemin: '/incidents' };
+const LIEN_HISTORIQUE = { libelle: 'Historique', chemin: '/historique' };
+
 export const routes: Routes = [
   {
     path: 'connexion',
@@ -38,6 +42,7 @@ export const routes: Routes = [
       {
         path: 'equipements/:id',
         title: 'Fiche équipement',
+        data: { parents: [LIEN_STATIONS] },
         loadComponent: () =>
           import('./features/equipements/equipement-details/equipement-details').then(
             (m) => m.EquipementDetails,
@@ -52,6 +57,7 @@ export const routes: Routes = [
       {
         path: 'incidents/nouveau',
         title: 'Déclarer un incident',
+        data: { parents: [LIEN_INCIDENTS] },
         loadComponent: () =>
           import('./features/incidents/incident-declaration/incident-declaration').then(
             (m) => m.IncidentDeclaration,
@@ -60,6 +66,7 @@ export const routes: Routes = [
       {
         path: 'incidents/:id',
         title: 'Détail incident',
+        data: { parents: [LIEN_INCIDENTS, LIEN_HISTORIQUE] },
         loadComponent: () =>
           import('./features/incidents/incident-details/incident-details').then(
             (m) => m.IncidentDetails,
@@ -79,6 +86,7 @@ export const routes: Routes = [
       },
       {
         path: 'agents/nouveau',
+        title: 'Ajouter un agent',
         ...estResponsable,
         loadComponent: () =>
           import('./features/auth/pages/inscription/inscription').then((m) => m.Inscription),

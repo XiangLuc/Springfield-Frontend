@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 
 html {
+  color-scheme: light;
   height: 100%;
   @include mat.theme(
     (
@@ -39,8 +40,11 @@ html {
   );
 }
 
+html.mode-nuit {
+  color-scheme: dark;
+}
+
 body {
-  color-scheme: light;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);

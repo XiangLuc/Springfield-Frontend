@@ -1,14 +1,14 @@
 // Les niveaux d'attention portent toujours une icône et un libellé : la couleur n'est jamais seule
 .niveau-rouge {
-  --couleur-niveau: #c62828;
+  --couleur-niveau: light-dark(#c62828, #f28b82);
 }
 
 .niveau-orange {
-  --couleur-niveau: #c25e00;
+  --couleur-niveau: light-dark(#c25e00, #fdba74);
 }
 
 .niveau-vert {
-  --couleur-niveau: #2e7d32;
+  --couleur-niveau: light-dark(#2e7d32, #81c995);
 }
 
 .niveau-affecte {

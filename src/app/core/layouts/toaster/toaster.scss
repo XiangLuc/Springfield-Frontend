@@ -34,7 +34,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: rgb(255 255 255 / 10%);
+    background-color: light-dark(rgb(255 255 255 / 10%), rgb(0 0 0 / 8%));
   }
 
   &:focus-visible {
@@ -49,11 +49,11 @@
 }
 
 .succes .icone {
-  color: #81c995;
+  color: light-dark(#81c995, #146c2e);
 }
 
 .erreur .icone {
-  color: #f2b8b5;
+  color: light-dark(#f2b8b5, #b3261e);
 }
 
 .info .icone {

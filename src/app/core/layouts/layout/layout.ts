@@ -4,11 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterOutlet } from '@angular/router';
 import { map } from 'rxjs';
+import { FilAriane } from '../fil-ariane/fil-ariane';
 import { Navbar } from '../navbar/navbar';
 import { Sidebar } from '../sidebar/sidebar';
 
 @Component({
-  imports: [RouterOutlet, MatSidenavModule, Navbar, Sidebar],
+  imports: [RouterOutlet, MatSidenavModule, FilAriane, Navbar, Sidebar],
   selector: 'app-layout',
   styleUrl: './layout.scss',
   templateUrl: './layout.html',
