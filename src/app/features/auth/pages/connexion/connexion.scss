@@ -1,0 +1,122 @@
+@use '@angular/material' as mat;
+
+.page {
+  display: grid;
+  min-height: 100dvh;
+  background-color: var(--mat-sys-surface-container-lowest);
+}
+
+.panneau-formulaire {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 32px 24px 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(var(--mat-sys-outline-variant) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(70% 35% at 50% 0%, #000, transparent);
+  }
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: var(--mat-sys-title-large);
+}
+
+.contenu {
+  width: 100%;
+  max-width: 380px;
+  margin: auto;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font: var(--mat-sys-headline-medium);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.sous-titre {
+  margin: 0 0 32px;
+  font: var(--mat-sys-body-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+
+  @include mat.form-field-overrides(
+    (
+      container-height: 48px,
+      container-vertical-padding: 12px,
+    )
+  );
+}
+
+.libelle {
+  margin-bottom: 6px;
+  font: var(--mat-sys-label-large);
+}
+
+mat-form-field {
+  margin-bottom: 4px;
+}
+
+.message-erreur {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bouton-connexion {
+  margin-top: 12px;
+
+  @include mat.button-overrides(
+    (
+      filled-container-height: 48px,
+    )
+  );
+}
+
+.aide {
+  margin: 24px 0 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.pied {
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.vitrine {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .page {
+    grid-template-columns: minmax(460px, 0.9fr) 1.1fr;
+  }
+
+  .panneau-formulaire {
+    padding: 40px 56px 32px;
+  }
+
+  .vitrine {
+    display: flex;
+    margin: 12px;
+  }
+}

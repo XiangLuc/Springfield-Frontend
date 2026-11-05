@@ -1,0 +1,43 @@
+<div class="entete-page">
+  <h1>Stations</h1>
+  <p>Équipements de chaque station, avec leur type et leur état de fonctionnement.</p>
+</div>
+
+<mat-form-field class="selection-station">
+  <mat-label>Station</mat-label>
+  <mat-select
+    [value]="idStationSelectionnee()"
+    (selectionChange)="selectionnerStation($event.value)"
+  >
+    @for (station of stations(); track station.id) {
+      <mat-option [value]="station.id">{{ station.nom }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
+@if (erreur()) {
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+}
+
+@if (stationSelectionnee(); as station) {
+  <mat-card class="carte" appearance="outlined">
+    <div class="entete-carte">
+      <h2>{{ station.nom }}</h2>
+      @if (!chargement()) {
+        <span class="compteur">
+          {{ equipements().length }} équipement{{ equipements().length > 1 ? 's' : '' }}
+        </span>
+      }
+    </div>
+
+    @if (chargement()) {
+      <p class="etat-vide">Chargement des équipements…</p>
+    } @else if (equipements().length === 0) {
+      <p class="etat-vide">Aucun équipement dans cette station.</p>
+    } @else {
+      <app-equipement-liste [equipements]="equipements()" />
+    }
+  </mat-card>
+} @else if (!erreur()) {
+  <p class="etat-vide">Sélectionnez une station pour afficher ses équipements.</p>
+}

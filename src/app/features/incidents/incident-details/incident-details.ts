@@ -1,0 +1,273 @@
+import { DatePipe } from '@angular/common';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { Component, computed, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
+import { PrestataireNote } from '../../../../api/models/ApiEquipement';
+import {
+  Evaluation,
+  IncidentResume,
+  LONGUEUR_MAX_COMMENTAIRE,
+  LONGUEUR_MAX_DESCRIPTION,
+  NOTE_MAXIMALE,
+  NOTE_MINIMALE,
+} from '../../../../api/models/ApiIncident';
+import { AuthService } from '../../../core/services/auth.service';
+import { IncidentService } from '../../../core/services/incident.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { PrestataireService } from '../../../core/services/prestataire.service';
+import { Badge } from '../../../shared/composants/badge/badge';
+import { messageErreur } from '../../../shared/erreurs/message-erreur';
+import { DureePipe } from '../../../shared/pipes/duree-pipe';
+
+const CONTIENT_UN_CARACTERE_VISIBLE = /\S/;
+
+@Component({
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    Badge,
+    DureePipe,
+  ],
+  selector: 'app-incident-details',
+  styleUrl: './incident-details.scss',
+  templateUrl: './incident-details.html',
+})
+export class IncidentDetails {
+  longueurMaxDescription = LONGUEUR_MAX_DESCRIPTION;
+  longueurMaxCommentaire = LONGUEUR_MAX_COMMENTAIRE;
+  noteMaximale = NOTE_MAXIMALE;
+  notes = Array.from(
+    { length: NOTE_MAXIMALE - NOTE_MINIMALE + 1 },
+    (_, position) => NOTE_MINIMALE + position,
+  );
+
+  description = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(CONTIENT_UN_CARACTERE_VISIBLE),
+      Validators.maxLength(LONGUEUR_MAX_DESCRIPTION),
+    ],
+  });
+  prestataireChoisi = new FormControl<number | null>(null, Validators.required);
+  note = new FormControl<number | null>(null, Validators.required);
+  commentaire = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(LONGUEUR_MAX_COMMENTAIRE)],
+  });
+
+  incident = signal<IncidentResume | null>(null);
+  evaluation = signal<Evaluation | null>(null);
+  prestataires = signal<PrestataireNote[]>([]);
+  chargement = signal(true);
+  erreur = signal<string | null>(null);
+  editionDescription = signal(false);
+  avertissementSurveillance = signal<string | null>(null);
+  confirmationResolution = signal(false);
+  actionEnCours = signal(false);
+
+  depuisHistorique;
+  estResolu;
+  estResponsable;
+
+  constructor(
+    private incidentService: IncidentService,
+    private prestataireService: PrestataireService,
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
+    this.depuisHistorique =
+      this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString() === '/historique';
+    this.estResolu = computed(() => this.incident()?.statut === 'RESOLU');
+    this.estResponsable = computed(
+      () => this.authService.utilisateurConnecte()?.profil === 'RESPONSABLE_EXPLOITATION',
+    );
+
+    this.route.paramMap
+      .pipe(
+        map((parametres) => Number(parametres.get('id'))),
+        tap(() => {
+          this.chargement.set(true);
+          this.erreur.set(null);
+        }),
+        switchMap((id) => this.incidentService.trouverIncident(id)),
+        takeUntilDestroyed(),
+      )
+      .subscribe({
+        next: (incident) => {
+          this.incident.set(incident);
+          this.chargement.set(false);
+          this.chargerEvaluationSiResolu();
+          this.chargerPrestatairesSiNecessaire();
+        },
+        error: (erreur: HttpErrorResponse) => {
+          this.erreur.set(messageErreur(erreur));
+          this.chargement.set(false);
+        },
+      });
+  }
+
+  commencerEditionDescription(): void {
+    this.description.setValue(this.incident()!.description);
+    this.editionDescription.set(true);
+  }
+
+  annulerEditionDescription(): void {
+    this.editionDescription.set(false);
+  }
+
+  enregistrerDescription(): void {
+    if (this.description.invalid) {
+      this.description.markAsTouched();
+      return;
+    }
+    this.executer(
+      this.incidentService.modifierDescription(this.incident()!.id, {
+        description: this.description.value,
+      }),
+      'La description a été modifiée.',
+      () => this.editionDescription.set(false),
+    );
+  }
+
+  affecter(): void {
+    if (this.prestataireChoisi.invalid) {
+      this.prestataireChoisi.markAsTouched();
+      return;
+    }
+    this.envoyerAffectation(false);
+  }
+
+  confirmerAffectation(): void {
+    this.envoyerAffectation(true);
+  }
+
+  annulerAffectation(): void {
+    this.avertissementSurveillance.set(null);
+  }
+
+  demanderResolution(): void {
+    this.confirmationResolution.set(true);
+  }
+
+  annulerResolution(): void {
+    this.confirmationResolution.set(false);
+  }
+
+  confirmerResolution(): void {
+    this.executer(
+      this.incidentService.resoudre(this.incident()!.id),
+      "L'incident est résolu.",
+      () => this.confirmationResolution.set(false),
+    );
+  }
+
+  evaluer(): void {
+    if (this.note.invalid || this.commentaire.invalid) {
+      this.note.markAsTouched();
+      this.commentaire.markAsTouched();
+      return;
+    }
+    this.actionEnCours.set(true);
+    this.incidentService
+      .evaluer(this.incident()!.id, { note: this.note.value!, commentaire: this.commentaire.value })
+      .pipe(finalize(() => this.actionEnCours.set(false)))
+      .subscribe({
+        next: (evaluation) => {
+          this.evaluation.set(evaluation);
+          this.notificationService.succes("L'évaluation a été enregistrée.");
+        },
+        error: (erreur: HttpErrorResponse) =>
+          this.notificationService.erreur(messageErreur(erreur)),
+      });
+  }
+
+  private envoyerAffectation(confirmationSurveillance: boolean): void {
+    this.executer(
+      this.incidentService.affecter(this.incident()!.id, {
+        prestataireId: this.prestataireChoisi.value!,
+        confirmationSurveillance,
+      }),
+      'Le prestataire a été affecté.',
+      () => {
+        this.prestataireChoisi.reset();
+        this.avertissementSurveillance.set(null);
+      },
+      (erreur) => this.demanderConfirmationSiSurveille(erreur),
+    );
+  }
+
+  private demanderConfirmationSiSurveille(erreur: HttpErrorResponse): void {
+    if (erreur.status === HttpStatusCode.Conflict && this.prestataireChoisiEstSurveille()) {
+      this.avertissementSurveillance.set(messageErreur(erreur));
+      return;
+    }
+    this.notificationService.erreur(messageErreur(erreur));
+  }
+
+  private prestataireChoisiEstSurveille(): boolean {
+    return this.prestataires().some(
+      (prestataire) => prestataire.id === this.prestataireChoisi.value && prestataire.sousSurveillance,
+    );
+  }
+
+  private executer(
+    action: Observable<IncidentResume>,
+    messageSucces: string,
+    apresSucces: () => void,
+    surErreur: (erreur: HttpErrorResponse) => void = (erreur) =>
+      this.notificationService.erreur(messageErreur(erreur)),
+  ): void {
+    this.actionEnCours.set(true);
+    action.pipe(finalize(() => this.actionEnCours.set(false))).subscribe({
+      next: (incident) => {
+        this.incident.set(incident);
+        apresSucces();
+        this.notificationService.succes(messageSucces);
+      },
+      error: surErreur,
+    });
+  }
+
+  // Un incident résolu n'a pas forcément été évalué : l'absence d'évaluation n'est pas une erreur
+  private chargerEvaluationSiResolu(): void {
+    if (!this.estResolu()) {
+      return;
+    }
+    this.incidentService
+      .trouverEvaluation(this.incident()!.id)
+      .pipe(catchError(() => of(null)))
+      .subscribe((evaluation) => this.evaluation.set(evaluation));
+  }
+
+  // Seul le responsable peut affecter : inutile de charger la liste pour l'agent
+  private chargerPrestatairesSiNecessaire(): void {
+    if (!this.estResponsable() || this.estResolu() || this.prestataires().length > 0) {
+      return;
+    }
+    this.prestataireService.listerPrestataires().subscribe({
+      next: (prestataires) => this.prestataires.set(prestataires),
+      error: (erreur: HttpErrorResponse) => this.notificationService.erreur(messageErreur(erreur)),
+    });
+  }
+}

@@ -1,0 +1,49 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.conteneur {
+  height: 100%;
+
+  @include mat.sidenav-overrides(
+    (
+      container-width: auto,
+      container-shape: 0,
+      container-background-color: var(--mat-sys-surface-container-low),
+      container-divider-color: transparent,
+      content-background-color: var(--mat-sys-surface-container-low),
+    )
+  );
+}
+
+.panneau {
+  box-sizing: border-box;
+  min-height: calc(100dvh - 16px);
+  margin: 8px 8px 8px 0;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  background-color: var(--mat-sys-surface);
+}
+
+.contenu {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 32px;
+}
+
+@media (max-width: 959.98px) {
+  .panneau {
+    min-height: 100dvh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .contenu {
+    padding: 24px 16px;
+  }
+}

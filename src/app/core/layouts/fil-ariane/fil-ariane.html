@@ -1,0 +1,16 @@
+@if (liens().length > 0) {
+  <nav aria-label="Fil d'Ariane">
+    <ol class="liste">
+      @for (lien of liens(); track lien.libelle) {
+        <li class="element">
+          @if (lien.chemin) {
+            <a class="lien" [routerLink]="lien.chemin">{{ lien.libelle }}</a>
+            <mat-icon class="separateur" svgIcon="chevron_right" />
+          } @else {
+            <span class="page-courante" aria-current="page">{{ lien.libelle }}</span>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+}

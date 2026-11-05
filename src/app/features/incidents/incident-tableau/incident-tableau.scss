@@ -1,0 +1,49 @@
+.defilement {
+  overflow-x: auto;
+}
+
+table {
+  min-width: 720px;
+}
+
+.date {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lien {
+  display: block;
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.secondaire {
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.description {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ligne {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  &:hover .lien {
+    text-decoration: underline;
+  }
+}
+
+.action {
+  width: 40px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: right;
+}

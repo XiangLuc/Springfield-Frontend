@@ -1,0 +1,76 @@
+<div class="entete-page">
+  <h1>Ajouter un agent</h1>
+  <p>
+    L'agent pourra se connecter avec cet identifiant et ce mot de passe pour signaler les pannes.
+  </p>
+</div>
+
+<mat-card class="carte" appearance="outlined">
+  <form
+    class="formulaire"
+    [formGroup]="formulaire"
+    #formulaireSoumis="ngForm"
+    (ngSubmit)="creerCompte(formulaireSoumis)"
+  >
+    <mat-form-field>
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom" autocomplete="off" required />
+      @if (formulaire.get('prenom')?.hasError('maxlength')) {
+        <mat-error>Le prénom ne doit pas dépasser {{ longueurMaxTexte }} caractères.</mat-error>
+      } @else {
+        <mat-error>Le prénom est obligatoire.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Identifiant</mat-label>
+      <input matInput formControlName="login" autocomplete="off" required />
+      @if (formulaire.get('login')?.hasError('maxlength')) {
+        <mat-error>L'identifiant ne doit pas dépasser {{ longueurMaxTexte }} caractères.</mat-error>
+      } @else {
+        <mat-error>L'identifiant est obligatoire.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Mot de passe</mat-label>
+      <input
+        matInput
+        [type]="motDePasseVisible() ? 'text' : 'password'"
+        formControlName="motDePasse"
+        autocomplete="new-password"
+        required
+      />
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        [attr.aria-label]="
+          motDePasseVisible() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+        "
+        [attr.aria-pressed]="motDePasseVisible()"
+        (click)="basculerVisibiliteMotDePasse()"
+      >
+        <mat-icon [svgIcon]="motDePasseVisible() ? 'visibility_off' : 'visibility'" />
+      </button>
+      <mat-hint>Au moins {{ longueurMinMotDePasse }} caractères.</mat-hint>
+      @if (formulaire.get('motDePasse')?.hasError('required')) {
+        <mat-error>Le mot de passe est obligatoire.</mat-error>
+      } @else {
+        <mat-error>
+          Le mot de passe doit contenir entre {{ longueurMinMotDePasse }} et
+          {{ longueurMaxMotDePasse }} caractères.
+        </mat-error>
+      }
+    </mat-form-field>
+
+    @if (erreur()) {
+      <p class="message-erreur" role="alert">{{ erreur() }}</p>
+    }
+
+    <button matButton="filled" type="submit" [disabled]="chargement()">
+      <mat-icon svgIcon="person_add" />
+      {{ chargement() ? 'Création…' : 'Créer le compte' }}
+    </button>
+  </form>
+</mat-card>

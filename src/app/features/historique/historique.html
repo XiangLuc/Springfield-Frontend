@@ -1,0 +1,28 @@
+<div class="entete-page">
+  <h1>Historique</h1>
+  <p>Incidents résolus, du plus récent au plus ancien.</p>
+</div>
+
+@if (erreur()) {
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+}
+
+<mat-card class="carte" appearance="outlined">
+  @if (resultat(); as resultat) {
+    @if (resultat.contenu.length === 0) {
+      <p class="etat-vide">Aucun incident résolu pour le moment.</p>
+    } @else {
+      <app-incident-tableau [incidents]="resultat.contenu" [colonnes]="colonnes" />
+      <mat-paginator
+        [length]="resultat.totalElements"
+        [pageIndex]="resultat.page"
+        [pageSize]="resultat.taille"
+        [pageSizeOptions]="taillesDePage"
+        [disabled]="chargement()"
+        (page)="changerPage($event)"
+      />
+    }
+  } @else if (chargement()) {
+    <p class="etat-vide">Chargement de l'historique…</p>
+  }
+</mat-card>

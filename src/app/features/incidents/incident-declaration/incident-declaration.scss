@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.retour {
+  margin: 0 0 12px -12px;
+}
+
+.carte {
+  padding: 24px;
+}
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  button[type='submit'] {
+    align-self: flex-start;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .carte {
+    padding: 16px;
+  }
+
+  .formulaire button[type='submit'] {
+    align-self: stretch;
+  }
+}

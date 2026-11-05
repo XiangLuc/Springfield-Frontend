@@ -1,0 +1,56 @@
+<div class="entete-page">
+  <h1>Prestataires</h1>
+  <p>Prestataires d'intervention et évaluation de leurs interventions.</p>
+</div>
+
+@if (erreur()) {
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+}
+
+<mat-card class="carte" appearance="outlined">
+  @if (chargement()) {
+    <p class="etat-vide">Chargement des prestataires…</p>
+  } @else if (prestataires().length === 0 && !erreur()) {
+    <p class="etat-vide">Aucun prestataire pour le moment.</p>
+  } @else if (prestataires().length > 0) {
+    <div class="defilement">
+      <table mat-table [dataSource]="prestataires()">
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>Prestataire</th>
+          <td mat-cell *matCellDef="let prestataire" class="nom">{{ prestataire.nom }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="contact">
+          <th mat-header-cell *matHeaderCellDef>Contact</th>
+          <td mat-cell *matCellDef="let prestataire">
+            @if (prestataire.email) {
+              <a class="lien" [href]="'mailto:' + prestataire.email">{{ prestataire.email }}</a>
+            }
+            @if (prestataire.telephone) {
+              <span class="secondaire">{{ prestataire.telephone }}</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="noteMoyenne">
+          <th mat-header-cell *matHeaderCellDef>Note moyenne</th>
+          <td mat-cell *matCellDef="let prestataire">
+            @if (prestataire.noteMoyenne !== null) {
+              <strong>{{ formaterNote(prestataire.noteMoyenne) }}</strong> / {{ noteMaximale }}
+            } @else {
+              <span class="secondaire">Pas encore évalué</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombreEvaluations">
+          <th mat-header-cell *matHeaderCellDef>Évaluations</th>
+          <td mat-cell *matCellDef="let prestataire">{{ prestataire.nombreEvaluations }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colonnes"></tr>
+        <tr mat-row *matRowDef="let prestataire; columns: colonnes"></tr>
+      </table>
+    </div>
+  }
+</mat-card>

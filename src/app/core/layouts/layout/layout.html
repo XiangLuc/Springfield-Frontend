@@ -1,0 +1,19 @@
+<mat-sidenav-container class="conteneur" autosize>
+  <mat-sidenav [mode]="estPetitEcran() ? 'over' : 'side'" [opened]="!estPetitEcran()">
+    <app-sidebar
+      [replie]="menuReplie() && !estPetitEcran()"
+      (repliementDemande)="basculerRepliement()"
+      (lienSuivi)="fermerMenuSurPetitEcran()"
+    />
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="panneau">
+      <app-navbar [afficherBoutonMenu]="estPetitEcran()" (menuDemande)="ouvrirMenu()" />
+      <main class="contenu">
+        <app-fil-ariane />
+        <router-outlet />
+      </main>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

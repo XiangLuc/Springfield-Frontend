@@ -1,0 +1,176 @@
+<div class="entete-page entete-liste">
+  <div>
+    <h1>Incidents</h1>
+    <p>Déclarez un incident, suivez sa prise en charge et enregistrez sa résolution.</p>
+  </div>
+  <a matButton="filled" routerLink="/incidents/nouveau">
+    <mat-icon svgIcon="add" />
+    Déclarer un incident
+  </a>
+</div>
+
+<section class="filtres" role="search" aria-label="Recherche d'incidents">
+  <mat-form-field class="recherche" subscriptSizing="dynamic">
+    <mat-label>Rechercher</mat-label>
+    <mat-icon matPrefix svgIcon="search" />
+    <input
+      #champRecherche
+      matInput
+      type="text"
+      autocomplete="off"
+      placeholder="Description ou référence d'équipement"
+      [value]="saisie()"
+      (input)="saisirRecherche(champRecherche.value)"
+    />
+    @if (saisie()) {
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        aria-label="Effacer la recherche"
+        (click)="saisirRecherche('')"
+      >
+        <mat-icon svgIcon="close" />
+      </button>
+    }
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Statut</mat-label>
+    <mat-select [value]="filtres().statut" (selectionChange)="filtrer({ statut: $event.value })">
+      <mat-option [value]="null">Tous les statuts</mat-option>
+      @for (statut of statuts; track statut[0]) {
+        <mat-option [value]="statut[0]">{{ statut[1] }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Station</mat-label>
+    <mat-select
+      [value]="filtres().stationId"
+      (selectionChange)="filtrer({ stationId: $event.value })"
+    >
+      <mat-option [value]="null">Toutes les stations</mat-option>
+      @for (station of stations(); track station.id) {
+        <mat-option [value]="station.id">{{ station.nom }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Prestataire</mat-label>
+    <mat-select
+      [value]="filtres().prestataireId"
+      (selectionChange)="filtrer({ prestataireId: $event.value })"
+    >
+      <mat-option [value]="null">Tous les prestataires</mat-option>
+      @for (prestataire of prestataires(); track prestataire.id) {
+        <mat-option [value]="prestataire.id">{{ prestataire.nom }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Ouvert depuis le</mat-label>
+    <input
+      class="date"
+      matInput
+      readonly
+      [matDatepicker]="calendrierDepuis"
+      [value]="filtres().ouvertDepuis"
+      [max]="filtres().ouvertJusquAu"
+      (click)="calendrierDepuis.open()"
+      (dateChange)="filtrer({ ouvertDepuis: $event.value })"
+    />
+    @if (filtres().ouvertDepuis) {
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        aria-label="Effacer la date de début"
+        (click)="filtrer({ ouvertDepuis: null })"
+      >
+        <mat-icon svgIcon="close" />
+      </button>
+    } @else {
+      <mat-datepicker-toggle matSuffix [for]="calendrierDepuis" />
+    }
+    <mat-datepicker #calendrierDepuis />
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Ouvert jusqu'au</mat-label>
+    <input
+      class="date"
+      matInput
+      readonly
+      [matDatepicker]="calendrierJusquAu"
+      [value]="filtres().ouvertJusquAu"
+      [min]="filtres().ouvertDepuis"
+      (click)="calendrierJusquAu.open()"
+      (dateChange)="filtrer({ ouvertJusquAu: $event.value })"
+    />
+    @if (filtres().ouvertJusquAu) {
+      <button
+        matIconButton
+        matSuffix
+        type="button"
+        aria-label="Effacer la date de fin"
+        (click)="filtrer({ ouvertJusquAu: null })"
+      >
+        <mat-icon svgIcon="close" />
+      </button>
+    } @else {
+      <mat-datepicker-toggle matSuffix [for]="calendrierJusquAu" />
+    }
+    <mat-datepicker #calendrierJusquAu />
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Trier par</mat-label>
+    <mat-select [value]="tri()" (selectionChange)="trier($event.value)">
+      @for (tri of tris; track tri.valeur) {
+        <mat-option [value]="tri.valeur">{{ tri.libelle }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (filtresActifs()) {
+    <button class="effacer" matButton type="button" (click)="reinitialiserFiltres()">
+      <mat-icon svgIcon="close" />
+      Effacer les filtres
+    </button>
+  }
+</section>
+
+@if (erreur()) {
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+}
+
+<mat-card class="carte" appearance="outlined">
+  @if (resultat(); as resultat) {
+    <div class="entete-carte">
+      <h2>Incidents</h2>
+      <span class="compteur" aria-live="polite">
+        {{ resultat.totalElements }} incident{{ resultat.totalElements > 1 ? 's' : '' }}
+      </span>
+    </div>
+
+    @if (resultat.contenu.length === 0) {
+      <p class="etat-vide">Aucun incident ne correspond à ces critères.</p>
+    } @else {
+      <app-incident-tableau [incidents]="resultat.contenu" [colonnes]="colonnes" />
+      <mat-paginator
+        [length]="resultat.totalElements"
+        [pageIndex]="resultat.page"
+        [pageSize]="resultat.taille"
+        [pageSizeOptions]="taillesDePage"
+        [disabled]="chargement()"
+        (page)="changerPage($event)"
+      />
+    }
+  } @else if (chargement()) {
+    <p class="etat-vide">Chargement des incidents…</p>
+  }
+</mat-card>

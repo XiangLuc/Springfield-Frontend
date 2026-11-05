@@ -1,0 +1,6 @@
+@if (utilisateur(); as utilisateur) {
+  <div class="entete-page">
+    <h1>Bonjour {{ utilisateur.prenom }}</h1>
+    <p>Vous êtes connecté avec le profil {{ utilisateur.libelleProfil }}.</p>
+  </div>
+}

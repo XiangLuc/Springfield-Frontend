@@ -1,0 +1,154 @@
+@if (chargement()) {
+  <p class="etat-vide">Chargement de la fiche…</p>
+} @else if (erreur()) {
+  <a class="retour" matButton routerLink="/stations">
+    <mat-icon svgIcon="arrow_back" />
+    Retour aux stations
+  </a>
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+} @else if (equipement(); as equipement) {
+  <a
+    class="retour"
+    matButton
+    routerLink="/stations"
+    [queryParams]="{ station: equipement.station.id }"
+  >
+    <mat-icon svgIcon="arrow_back" />
+    {{ equipement.station.nom }}
+  </a>
+
+  <div class="entete-page entete-fiche">
+    <div>
+      <h1>{{ equipement.libelle }}</h1>
+      <p>{{ equipement.reference }}</p>
+    </div>
+    <div class="actions-fiche">
+      <app-badge [valeur]="equipement.etat" />
+      <a
+        matButton="filled"
+        routerLink="/incidents/nouveau"
+        [queryParams]="{ equipement: equipement.id }"
+      >
+        <mat-icon svgIcon="add" />
+        Déclarer un incident
+      </a>
+    </div>
+  </div>
+
+  <mat-card class="carte" appearance="outlined">
+    <dl class="informations">
+      <div>
+        <dt>Type</dt>
+        <dd>{{ equipement.type.nom }}</dd>
+      </div>
+      <div>
+        <dt>Station</dt>
+        <dd>{{ equipement.station.nom }}</dd>
+      </div>
+      <div>
+        <dt>État</dt>
+        <dd>{{ libellesEtat[equipement.etat] }}</dd>
+      </div>
+      <div class="pleine-largeur">
+        <dt>Description</dt>
+        <dd>{{ equipement.description || 'Aucune description.' }}</dd>
+      </div>
+    </dl>
+  </mat-card>
+
+  <section class="section">
+    <h2>
+      Incidents en cours
+      <span class="compteur">{{ incidentsEnCours().length }}</span>
+    </h2>
+    <mat-card class="carte" appearance="outlined">
+      @if (incidentsEnCours().length === 0) {
+        <p class="etat-vide">Aucun incident en cours sur cet équipement.</p>
+      } @else {
+        <div class="defilement">
+          <table mat-table [dataSource]="incidentsEnCours()">
+            <ng-container matColumnDef="dateOuverture">
+              <th mat-header-cell *matHeaderCellDef>Ouvert le</th>
+              <td mat-cell *matCellDef="let incident" class="date">
+                {{ incident.dateOuverture | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let incident">{{ incident.description }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="statut">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let incident">
+                <app-badge [valeur]="incident.statut" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="prestataire">
+              <th mat-header-cell *matHeaderCellDef>Prestataire</th>
+              <td mat-cell *matCellDef="let incident">{{ incident.prestataire?.nom ?? '—' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colonnesEnCours"></tr>
+            <tr
+              mat-row
+              *matRowDef="let incident; columns: colonnesEnCours"
+              class="ligne"
+              [routerLink]="['/incidents', incident.id]"
+            ></tr>
+          </table>
+        </div>
+      }
+    </mat-card>
+  </section>
+
+  <section class="section">
+    <h2>
+      Incidents passés
+      <span class="compteur">{{ incidentsPasses().length }}</span>
+    </h2>
+    <mat-card class="carte" appearance="outlined">
+      @if (incidentsPasses().length === 0) {
+        <p class="etat-vide">Aucun incident passé sur cet équipement.</p>
+      } @else {
+        <div class="defilement">
+          <table mat-table [dataSource]="incidentsPasses()">
+            <ng-container matColumnDef="dateOuverture">
+              <th mat-header-cell *matHeaderCellDef>Ouvert le</th>
+              <td mat-cell *matCellDef="let incident" class="date">
+                {{ incident.dateOuverture | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let incident">{{ incident.description }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="prestataire">
+              <th mat-header-cell *matHeaderCellDef>Prestataire</th>
+              <td mat-cell *matCellDef="let incident">{{ incident.prestataire?.nom ?? '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="dateResolution">
+              <th mat-header-cell *matHeaderCellDef>Résolu le</th>
+              <td mat-cell *matCellDef="let incident" class="date">
+                {{ incident.dateResolution | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="colonnesPasses"></tr>
+            <tr
+              mat-row
+              *matRowDef="let incident; columns: colonnesPasses"
+              class="ligne"
+              [routerLink]="['/incidents', incident.id]"
+            ></tr>
+          </table>
+        </div>
+      }
+    </mat-card>
+  </section>
+}

@@ -1,0 +1,254 @@
+@if (chargement()) {
+  <p class="etat-vide">Chargement de l'incident…</p>
+} @else if (erreur()) {
+  <a class="retour" matButton routerLink="/incidents">
+    <mat-icon svgIcon="arrow_back" />
+    Retour aux incidents
+  </a>
+  <p class="message-erreur" role="alert">{{ erreur() }}</p>
+} @else if (incident(); as incident) {
+  <a class="retour" matButton [routerLink]="depuisHistorique ? '/historique' : '/incidents'">
+    <mat-icon svgIcon="arrow_back" />
+    {{ depuisHistorique ? 'Historique' : 'Incidents' }}
+  </a>
+
+  <div class="entete-page entete-incident">
+    <div>
+      <h1>Incident n°{{ incident.id }}</h1>
+      <p>{{ incident.libelleEquipement }} · {{ incident.station }}</p>
+    </div>
+    <app-badge [valeur]="incident.statut" />
+  </div>
+
+  <mat-card class="carte" appearance="outlined">
+    <dl class="informations">
+      <div>
+        <dt>Équipement</dt>
+        <dd>
+          <a class="lien" [routerLink]="['/equipements', incident.equipementId]">
+            {{ incident.libelleEquipement }}
+          </a>
+          <span class="secondaire">{{ incident.referenceEquipement }}</span>
+        </dd>
+      </div>
+      <div>
+        <dt>Station</dt>
+        <dd>{{ incident.station }}</dd>
+      </div>
+      <div>
+        <dt>Ouvert le</dt>
+        <dd class="date">{{ incident.dateOuverture | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      </div>
+      <div>
+        <dt>{{ estResolu() ? 'Résolu en' : 'Ouvert depuis' }}</dt>
+        <dd class="date">{{ incident.dureeOuvertureEnHeures | duree }}</dd>
+      </div>
+      <div>
+        <dt>Prestataire</dt>
+        <dd>
+          {{ incident.prestataire ?? 'Non affecté' }}
+          @if (incident.prestataireSousSurveillance) {
+            <span class="sous-surveillance">sous surveillance</span>
+          }
+        </dd>
+      </div>
+      @if (incident.dateResolution) {
+        <div>
+          <dt>Résolu le</dt>
+          <dd class="date">{{ incident.dateResolution | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        </div>
+      }
+    </dl>
+  </mat-card>
+
+  <section class="section">
+    <div class="entete-section">
+      <h2>Description</h2>
+      @if (!estResolu() && !editionDescription()) {
+        <button matButton type="button" (click)="commencerEditionDescription()">
+          <mat-icon svgIcon="edit" />
+          Modifier
+        </button>
+      }
+    </div>
+    <mat-card class="carte contenu" appearance="outlined">
+      @if (editionDescription()) {
+        <mat-form-field>
+          <mat-label>Description de la panne</mat-label>
+          <textarea
+            matInput
+            [formControl]="description"
+            rows="5"
+            [maxlength]="longueurMaxDescription"
+            required
+          ></textarea>
+          <mat-hint align="end">
+            {{ description.value.length }} / {{ longueurMaxDescription }}
+          </mat-hint>
+          <mat-error>La description est obligatoire.</mat-error>
+        </mat-form-field>
+        <div class="boutons">
+          <button
+            matButton="filled"
+            type="button"
+            [disabled]="actionEnCours()"
+            (click)="enregistrerDescription()"
+          >
+            Enregistrer
+          </button>
+          <button matButton type="button" (click)="annulerEditionDescription()">Annuler</button>
+        </div>
+      } @else {
+        <p class="description">{{ incident.description }}</p>
+      }
+    </mat-card>
+  </section>
+
+  @if (!estResolu()) {
+    <section class="section">
+      <h2>Prise en charge</h2>
+      <mat-card class="carte contenu" appearance="outlined">
+        @if (estResponsable()) {
+          <div class="ligne-action">
+            <mat-form-field class="choix-prestataire" subscriptSizing="dynamic">
+              <mat-label>
+                {{ incident.prestataire ? 'Réaffecter à' : 'Affecter à' }}
+              </mat-label>
+              <mat-select [formControl]="prestataireChoisi" (selectionChange)="annulerAffectation()">
+                @for (prestataire of prestataires(); track prestataire.id) {
+                  <mat-option
+                    [value]="prestataire.id"
+                    [disabled]="prestataire.id === incident.prestataireId"
+                  >
+                    {{ prestataire.nom }}{{ prestataire.sousSurveillance ? ' (sous surveillance)' : '' }}
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-error>Choisissez un prestataire.</mat-error>
+            </mat-form-field>
+            <button
+              matButton="tonal"
+              type="button"
+              [disabled]="actionEnCours() || avertissementSurveillance()"
+              (click)="affecter()"
+            >
+              <mat-icon svgIcon="assignment_ind" />
+              {{ incident.prestataire ? 'Réaffecter' : 'Affecter' }}
+            </button>
+          </div>
+
+          @if (avertissementSurveillance(); as avertissement) {
+            <div class="avertissement-surveillance" role="alert">
+              <p class="confirmation">{{ avertissement }}</p>
+              <div class="boutons">
+                <button
+                  matButton="filled"
+                  type="button"
+                  [disabled]="actionEnCours()"
+                  (click)="confirmerAffectation()"
+                >
+                  <mat-icon svgIcon="assignment_ind" />
+                  Confirmer l'affectation
+                </button>
+                <button matButton type="button" (click)="annulerAffectation()">Annuler</button>
+              </div>
+            </div>
+          }
+
+          <div class="separateur"></div>
+
+          @if (confirmationResolution()) {
+            <p class="confirmation" role="alert">
+              Une fois résolu, l'incident ne pourra plus être modifié ni affecté. Confirmer ?
+            </p>
+            <div class="boutons">
+              <button
+                matButton="filled"
+                type="button"
+                [disabled]="actionEnCours()"
+                (click)="confirmerResolution()"
+              >
+                <mat-icon svgIcon="task_alt" />
+                Confirmer la résolution
+              </button>
+              <button matButton type="button" (click)="annulerResolution()">Annuler</button>
+            </div>
+          } @else {
+            <button matButton="outlined" type="button" (click)="demanderResolution()">
+              <mat-icon svgIcon="task_alt" />
+              Déclarer l'incident résolu
+            </button>
+          }
+        } @else {
+          <p class="information">
+            Seul un responsable d'exploitation peut affecter un prestataire ou déclarer l'incident
+            résolu.
+          </p>
+        }
+      </mat-card>
+    </section>
+  } @else {
+    <section class="section">
+      <h2>Évaluation du prestataire</h2>
+      <mat-card class="carte contenu" appearance="outlined">
+        @if (evaluation(); as evaluation) {
+          <p class="note">{{ evaluation.note }} / {{ noteMaximale }}</p>
+          @if (evaluation.commentaire) {
+            <p class="description">{{ evaluation.commentaire }}</p>
+          }
+          <p class="secondaire date-evaluation">
+            Évalué le {{ evaluation.dateEvaluation | date: 'dd/MM/yyyy à HH:mm' }}
+          </p>
+        } @else if (!incident.prestataire) {
+          <p class="information">
+            Cet incident n'a été affecté à aucun prestataire : il ne peut pas être évalué.
+          </p>
+        } @else if (estResponsable()) {
+          <div class="formulaire-evaluation">
+            <div>
+              <p class="libelle-note" id="libelle-note">
+                Note de {{ incident.prestataire }} (obligatoire)
+              </p>
+              <mat-button-toggle-group
+                [formControl]="note"
+                aria-labelledby="libelle-note"
+                hideSingleSelectionIndicator
+              >
+                @for (valeur of notes; track valeur) {
+                  <mat-button-toggle [value]="valeur">{{ valeur }}</mat-button-toggle>
+                }
+              </mat-button-toggle-group>
+              @if (note.touched && note.invalid) {
+                <p class="erreur-note" role="alert">Choisissez une note.</p>
+              }
+            </div>
+
+            <mat-form-field>
+              <mat-label>Commentaire (facultatif)</mat-label>
+              <textarea
+                matInput
+                [formControl]="commentaire"
+                rows="3"
+                [maxlength]="longueurMaxCommentaire"
+              ></textarea>
+              <mat-hint align="end">
+                {{ commentaire.value.length }} / {{ longueurMaxCommentaire }}
+              </mat-hint>
+            </mat-form-field>
+
+            <button
+              matButton="filled"
+              type="button"
+              [disabled]="actionEnCours()"
+              (click)="evaluer()"
+            >
+              {{ actionEnCours() ? 'Enregistrement…' : "Enregistrer l'évaluation" }}
+            </button>
+          </div>
+        } @else {
+          <p class="information">Aucune évaluation pour cet incident.</p>
+        }
+      </mat-card>
+    </section>
+  }
+}

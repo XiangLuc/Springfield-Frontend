@@ -1,0 +1,57 @@
+<div class="entete">
+  <div class="marque">
+    <img src="images/logo.svg" alt="" width="36" height="36" />
+    @if (!replie()) {
+      <span>Springfield</span>
+    }
+  </div>
+  <button
+    matIconButton
+    type="button"
+    [attr.aria-label]="replie() ? 'Déplier le menu' : 'Replier le menu'"
+    [attr.aria-expanded]="!replie()"
+    (click)="repliementDemande.emit()"
+  >
+    <mat-icon [svgIcon]="replie() ? 'left_panel_open' : 'left_panel_close'" />
+  </button>
+</div>
+
+<mat-nav-list aria-label="Navigation principale">
+  @for (section of sections(); track section.titre) {
+    <p class="section">
+      <span class="section-titre">{{ section.titre }}</span>
+    </p>
+
+    @for (lien of section.liens; track lien.chemin) {
+      <a
+        mat-list-item
+        [routerLink]="lien.chemin"
+        routerLinkActive
+        #actif="routerLinkActive"
+        [routerLinkActiveOptions]="{ exact: lien.chemin === '/' }"
+        [activated]="actif.isActive"
+        [matTooltip]="lien.libelle"
+        matTooltipPosition="right"
+        [matTooltipDisabled]="!replie()"
+        (click)="lienSuivi.emit()"
+      >
+        <mat-icon matListItemIcon [svgIcon]="lien.icone" />
+        <span matListItemTitle class="libelle">{{ lien.libelle }}</span>
+      </a>
+    }
+  }
+</mat-nav-list>
+
+<mat-action-list class="pied">
+  <button
+    mat-list-item
+    type="button"
+    matTooltip="Déconnectez-vous"
+    matTooltipPosition="right"
+    [matTooltipDisabled]="!replie()"
+    (click)="deconnecter()"
+  >
+    <mat-icon matListItemIcon svgIcon="logout" />
+    <span matListItemTitle class="libelle">Déconnectez-vous</span>
+  </button>
+</mat-action-list>

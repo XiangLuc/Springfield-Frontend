@@ -1,0 +1,32 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  font: var(--mat-sys-label-medium);
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+}
+
+:host(.succes) {
+  background-color: light-dark(#e6f4ea, #0f3d1e);
+  color: light-dark(#146c2e, #a8dab5);
+}
+
+:host(.alerte) {
+  background-color: light-dark(#fef3d6, #4a3200);
+  color: light-dark(#7a4a00, #ffd98a);
+}
+
+:host(.erreur) {
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}

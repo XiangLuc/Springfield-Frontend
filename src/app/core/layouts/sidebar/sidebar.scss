@@ -1,0 +1,85 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 264px;
+  height: 100%;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 12px 8px 20px;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: var(--mat-sys-title-large);
+}
+
+mat-nav-list,
+mat-action-list {
+  padding: 0 12px 12px;
+
+  @include mat.list-overrides(
+    (
+      list-item-one-line-container-height: 40px,
+      list-item-container-shape: var(--mat-sys-corner-small),
+      active-indicator-color: var(--mat-sys-surface-container-highest),
+      active-indicator-shape: var(--mat-sys-corner-small),
+    )
+  );
+}
+
+.pied {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.section {
+  margin: 20px 12px 4px;
+  font: var(--mat-sys-label-small);
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+:host(.replie) {
+  width: 72px;
+
+  .entete {
+    flex-direction: column;
+    gap: 8px;
+    padding-inline: 0;
+  }
+
+  mat-nav-list,
+  mat-action-list {
+    @include mat.list-overrides(
+      (
+        list-item-leading-icon-start-space: 12px,
+      )
+    );
+  }
+
+  .section {
+    height: 1px;
+    margin: 12px;
+    background-color: var(--mat-sys-outline-variant);
+  }
+
+  .section-titre,
+  .libelle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

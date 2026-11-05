@@ -1,0 +1,34 @@
+<header class="barre">
+  @if (afficherBoutonMenu()) {
+    <button
+      matIconButton
+      type="button"
+      aria-label="Ouvrir le menu de navigation"
+      (click)="menuDemande.emit()"
+    >
+      <mat-icon svgIcon="menu" />
+    </button>
+    <a class="lien-logo" routerLink="/" aria-label="Springfield, retour à l'accueil">
+      <img src="images/logo.svg" alt="" width="36" height="36" />
+    </a>
+  }
+
+  <span class="espace"></span>
+
+  <button
+    matIconButton
+    type="button"
+    [attr.aria-label]="modeNuit() ? 'Passer en mode jour' : 'Passer en mode nuit'"
+    (click)="basculerTheme()"
+  >
+    <mat-icon [svgIcon]="modeNuit() ? 'light_mode' : 'dark_mode'" />
+  </button>
+
+  @if (utilisateur(); as utilisateur) {
+    <p class="salutation">
+      Bonjour {{ utilisateur.prenom }}
+      <span class="salutation-profil">({{ utilisateur.libelleProfil }})</span>
+    </p>
+    <span class="avatar" aria-hidden="true">{{ utilisateur.prenom.charAt(0) }}</span>
+  }
+</header>

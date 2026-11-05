@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Springfield</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Springfield : supervision des équipements du réseau de transport et suivi des incidents."
+    />
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'nuit') {
+          document.documentElement.classList.add('mode-nuit');
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <app-root>
+      <div class="demarrage" role="status">
+        <span class="demarrage-indicateur"></span>
+        <p>Chargement de l'application…</p>
+      </div>
+    </app-root>
+  </body>
+</html>
