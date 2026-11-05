@@ -19,6 +19,7 @@ export interface IncidentResume {
   station: string;
   prestataireId: number | null;
   prestataire: string | null;
+  prestataireSousSurveillance: boolean;
 }
 
 export interface Page<T> {
@@ -69,4 +70,5 @@ export interface ModificationIncident {
 
 export interface Affectation {
   prestataireId: number;
+  confirmationSurveillance: boolean;
 }

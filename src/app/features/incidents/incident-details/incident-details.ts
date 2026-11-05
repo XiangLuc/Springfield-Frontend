@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
-import { Prestataire } from '../../../../api/models/ApiEquipement';
+import { PrestataireNote } from '../../../../api/models/ApiEquipement';
 import {
   Evaluation,
   IncidentResume,
@@ -76,10 +76,11 @@ export class IncidentDetails {
 
   incident = signal<IncidentResume | null>(null);
   evaluation = signal<Evaluation | null>(null);
-  prestataires = signal<Prestataire[]>([]);
+  prestataires = signal<PrestataireNote[]>([]);
   chargement = signal(true);
   erreur = signal<string | null>(null);
   editionDescription = signal(false);
+  avertissementSurveillance = signal<string | null>(null);
   confirmationResolution = signal(false);
   actionEnCours = signal(false);
 
@@ -154,13 +155,15 @@ export class IncidentDetails {
       this.prestataireChoisi.markAsTouched();
       return;
     }
-    this.executer(
-      this.incidentService.affecter(this.incident()!.id, {
-        prestataireId: this.prestataireChoisi.value!,
-      }),
-      'Le prestataire a été affecté.',
-      () => this.prestataireChoisi.reset(),
-    );
+    this.envoyerAffectation(false);
+  }
+
+  confirmerAffectation(): void {
+    this.envoyerAffectation(true);
+  }
+
+  annulerAffectation(): void {
+    this.avertissementSurveillance.set(null);
   }
 
   demanderResolution(): void {
@@ -199,10 +202,41 @@ export class IncidentDetails {
       });
   }
 
+  private envoyerAffectation(confirmationSurveillance: boolean): void {
+    this.executer(
+      this.incidentService.affecter(this.incident()!.id, {
+        prestataireId: this.prestataireChoisi.value!,
+        confirmationSurveillance,
+      }),
+      'Le prestataire a été affecté.',
+      () => {
+        this.prestataireChoisi.reset();
+        this.avertissementSurveillance.set(null);
+      },
+      (erreur) => this.demanderConfirmationSiSurveille(erreur),
+    );
+  }
+
+  private demanderConfirmationSiSurveille(erreur: HttpErrorResponse): void {
+    if (erreur.status === HttpStatusCode.Conflict && this.prestataireChoisiEstSurveille()) {
+      this.avertissementSurveillance.set(messageErreur(erreur));
+      return;
+    }
+    this.notificationService.erreur(messageErreur(erreur));
+  }
+
+  private prestataireChoisiEstSurveille(): boolean {
+    return this.prestataires().some(
+      (prestataire) => prestataire.id === this.prestataireChoisi.value && prestataire.sousSurveillance,
+    );
+  }
+
   private executer(
     action: Observable<IncidentResume>,
     messageSucces: string,
     apresSucces: () => void,
+    surErreur: (erreur: HttpErrorResponse) => void = (erreur) =>
+      this.notificationService.erreur(messageErreur(erreur)),
   ): void {
     this.actionEnCours.set(true);
     action.pipe(finalize(() => this.actionEnCours.set(false))).subscribe({
@@ -211,7 +245,7 @@ export class IncidentDetails {
         apresSucces();
         this.notificationService.succes(messageSucces);
       },
-      error: (erreur: HttpErrorResponse) => this.notificationService.erreur(messageErreur(erreur)),
+      error: surErreur,
     });
   }
 

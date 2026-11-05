@@ -114,6 +114,24 @@
   font: var(--mat-sys-body-medium);
 }
 
+.sous-surveillance {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 8px;
+  border-radius: var(--mat-sys-corner-full);
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  font: var(--mat-sys-label-medium);
+}
+
+.avertissement-surveillance {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--mat-sys-corner-small);
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
 .information {
   margin: 0;
   color: var(--mat-sys-on-surface-variant);

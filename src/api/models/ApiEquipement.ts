@@ -29,6 +29,7 @@ export interface Prestataire {
 export interface PrestataireNote extends Prestataire {
   noteMoyenne: number | null;
   nombreEvaluations: number;
+  sousSurveillance: boolean;
 }
 
 export interface Incident {

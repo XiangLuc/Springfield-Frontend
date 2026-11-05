@@ -17,6 +17,7 @@ const INCIDENT: IncidentResume = {
   station: 'Springfield Centre',
   prestataireId: 1,
   prestataire: 'Élévation Services',
+  prestataireSousSurveillance: false,
 };
 
 describe('IncidentTableau', () => {

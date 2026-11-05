@@ -45,7 +45,12 @@
       </div>
       <div>
         <dt>Prestataire</dt>
-        <dd>{{ incident.prestataire ?? 'Non affecté' }}</dd>
+        <dd>
+          {{ incident.prestataire ?? 'Non affecté' }}
+          @if (incident.prestataireSousSurveillance) {
+            <span class="sous-surveillance">sous surveillance</span>
+          }
+        </dd>
       </div>
       @if (incident.dateResolution) {
         <div>
@@ -109,13 +114,13 @@
               <mat-label>
                 {{ incident.prestataire ? 'Réaffecter à' : 'Affecter à' }}
               </mat-label>
-              <mat-select [formControl]="prestataireChoisi">
+              <mat-select [formControl]="prestataireChoisi" (selectionChange)="annulerAffectation()">
                 @for (prestataire of prestataires(); track prestataire.id) {
                   <mat-option
                     [value]="prestataire.id"
                     [disabled]="prestataire.id === incident.prestataireId"
                   >
-                    {{ prestataire.nom }}
+                    {{ prestataire.nom }}{{ prestataire.sousSurveillance ? ' (sous surveillance)' : '' }}
                   </mat-option>
                 }
               </mat-select>
@@ -124,13 +129,31 @@
             <button
               matButton="tonal"
               type="button"
-              [disabled]="actionEnCours()"
+              [disabled]="actionEnCours() || avertissementSurveillance()"
               (click)="affecter()"
             >
               <mat-icon svgIcon="assignment_ind" />
               {{ incident.prestataire ? 'Réaffecter' : 'Affecter' }}
             </button>
           </div>
+
+          @if (avertissementSurveillance(); as avertissement) {
+            <div class="avertissement-surveillance" role="alert">
+              <p class="confirmation">{{ avertissement }}</p>
+              <div class="boutons">
+                <button
+                  matButton="filled"
+                  type="button"
+                  [disabled]="actionEnCours()"
+                  (click)="confirmerAffectation()"
+                >
+                  <mat-icon svgIcon="assignment_ind" />
+                  Confirmer l'affectation
+                </button>
+                <button matButton type="button" (click)="annulerAffectation()">Annuler</button>
+              </div>
+            </div>
+          }
 
           <div class="separateur"></div>
 
